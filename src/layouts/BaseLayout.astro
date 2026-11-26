@@ -9,6 +9,7 @@ interface Props {
   description?: string;
   image?: string;
   publishedTime?: string;
+  canonical?: string;
 }
 
 const {
@@ -16,6 +17,7 @@ const {
   description = site.description,
   image = site.ogImage,
   publishedTime,
+  canonical: canonicalOverride,
 } = Astro.props;
 
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
@@ -23,7 +25,7 @@ const isArticle =
   /^\/writing\/[^/]+$/.test(path) || /^\/case-studies\/[^/]+$/.test(path);
 const ogType = isArticle ? 'article' : 'website';
 
-const canonical = new URL(Astro.url.pathname, site.url).toString();
+const canonical = canonicalOverride ?? new URL(Astro.url.pathname, site.url).toString();
 const imageUrl = new URL(image, site.url).toString();
 const pageTitle = title === site.title ? title : `${title} — Shantanu Acharya`;
 ---

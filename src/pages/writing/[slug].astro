@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
 import { formatDate } from '../../lib/format';
 
 export async function getStaticPaths() {
@@ -13,12 +14,16 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+
+const publishedTime = entry.data.pubDate.toISOString();
+const canonicalUrl = new URL(`/writing/${entry.id}`, site.url).href.replace(/\/$/, '');
 ---
 
 <BaseLayout
   title={entry.data.title}
   description={entry.data.description}
-  publishedTime={entry.data.pubDate.toISOString()}
+  publishedTime={publishedTime}
+  canonical={canonicalUrl}
 >
   <article class="mx-auto max-w-3xl px-5 pt-16 pb-24 sm:px-6 md:pt-24">
     <a

@@ -1,11 +1,23 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import WritingFeed from '../../components/WritingFeed.astro';
+import WritingIndexFeed from '../../components/WritingIndexFeed';
+import { formatDate } from '../../lib/format';
+import { writingTopicForSlug } from '../../lib/writing-topics';
 
 const posts = (await getCollection('writing')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+const listItems = posts.map((post) => ({
+  slug: post.id,
+  title: post.data.title,
+  description: post.data.description,
+  dateLabel: formatDate(post.data.pubDate),
+  dateTime: post.data.pubDate.toISOString(),
+  readingTime: post.data.readingTime,
+  topicId: writingTopicForSlug(post.id),
+}));
 ---
 
 <BaseLayout
@@ -18,9 +30,9 @@ const posts = (await getCollection('writing')).sort(
       Thought leadership for people who run the system.
     </h1>
   </div>
-  <WritingFeed
-    posts={posts}
-    showIndex={false}
+  <WritingIndexFeed
+    client:visible
+    posts={listItems}
     heading="Recent essays"
     lede="Five essays on governed agentic systems, semantic context, and production AI—archived here and linked to Medium where originally published."
   />
