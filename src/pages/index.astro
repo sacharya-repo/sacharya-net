@@ -16,5 +16,5 @@ const posts = (await getCollection('writing')).sort(
   <Hero />
   <CaseStudies studies={studies} />
   <WritingFeed posts={posts} />
-  <Bio />
+  <Bio showHeadshot={false} />
 </BaseLayout>

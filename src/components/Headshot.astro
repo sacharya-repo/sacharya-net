@@ -3,19 +3,18 @@ import { site } from '../data/site';
 
 interface Props {
   variant?: 'hero' | 'bio';
-  compact?: boolean;
   class?: string;
 }
 
-const { variant = 'hero', compact = false, class: className = '' } = Astro.props;
+const { variant = 'hero', class: className = '' } = Astro.props;
 
-const showCaption = !compact && variant === 'hero';
+const showCaption = variant === 'hero';
 ---
 
 <figure
   class:list={[
     'group relative',
-    compact ? 'max-w-[10.5rem]' : variant === 'bio' ? 'max-w-[15rem]' : 'max-w-[18.5rem]',
+    variant === 'bio' ? 'max-w-[15rem]' : 'max-w-[18.5rem]',
     'w-full',
     className,
   ]}
@@ -40,9 +39,9 @@ const showCaption = !compact && variant === 'hero';
         alt={`Portrait of ${site.name}, ${site.role}`}
         width={935}
         height={1024}
-        loading={variant === 'hero' && !compact ? 'eager' : 'lazy'}
+        loading={variant === 'hero' ? 'eager' : 'lazy'}
         decoding="async"
-        fetchpriority={variant === 'hero' && !compact ? 'high' : 'auto'}
+        fetchpriority={variant === 'hero' ? 'high' : 'auto'}
         class="headshot-image aspect-[47/52] w-full object-cover object-[center_14%] saturate-[0.94] contrast-[1.02]"
       />
       <div
@@ -61,7 +60,7 @@ const showCaption = !compact && variant === 'hero';
 
   {
     showCaption && (
-      <figcaption class="mt-4 border-t border-neutral-200 pt-4 dark:border-neutral-800">
+      <figcaption class="mt-4 hidden border-t border-neutral-200 pt-4 lg:block dark:border-neutral-800">
         <p class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">{site.role}</p>
         <p class="mt-1.5 text-sm leading-snug text-neutral-600 dark:text-neutral-400">
           Enterprise architecture, governed AI, and regulated healthcare platforms.

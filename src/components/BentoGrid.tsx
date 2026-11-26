@@ -89,14 +89,22 @@ export default function BentoGrid({ studies }: { studies: StudyCard[] }) {
                 </li>
               ))}
             </ul>
-            {study.featured && (
-              <dl className="mt-6 grid gap-4 border-t border-neutral-200 pt-6 sm:grid-cols-3 dark:border-neutral-800">
+            {study.metrics.length > 0 && (
+              <dl
+                className={`mt-6 grid gap-4 border-t border-neutral-200 pt-6 sm:grid-cols-3 dark:border-neutral-800 ${
+                  study.featured ? '' : 'gap-3 pt-5'
+                }`}
+              >
                 {study.metrics.map((metric) => (
                   <div key={metric.label}>
                     <dt className="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">
                       {metric.label}
                     </dt>
-                    <dd className="mt-1 text-lg font-medium tracking-tight text-neutral-950 dark:text-white">
+                    <dd
+                      className={`mt-1 font-medium tracking-tight text-neutral-950 dark:text-white ${
+                        study.featured ? 'text-lg' : 'text-base'
+                      }`}
+                    >
                       {metric.value}
                     </dd>
                   </div>
