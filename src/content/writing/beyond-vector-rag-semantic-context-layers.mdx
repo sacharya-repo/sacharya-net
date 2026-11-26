@@ -1,0 +1,50 @@
+---
+title: "Beyond Vector Search: Why Enterprise Agents Need a Semantic Context Layer"
+description: Similarity can retrieve a passage. It cannot tell an agent which entity, policy, or time bound that passage belongs to. Enterprise agents need a semantic context layer beside the index.
+pubDate: 2026-10-14
+readingTime: 8 min read
+tags:
+  - Semantic Layer
+  - RAG
+  - Agents
+---
+
+Most enterprise RAG programs fail in a specific way. The demo retrieves a plausible paragraph. The production agent then acts as if that paragraph were the state of the business. It is not. It is a nearby sentence.
+
+Vector search is a good index. It is a poor model of an enterprise. An enterprise is entities, the relationships those entities are allowed to have, the policies that constrain them, and the time at which any of that was true. None of that is what cosine similarity returns.
+
+## What the index actually gives you
+
+A chunk is anonymous until something else names it. Two passages about “the adjustment process” can sit next to each other in embedding space and belong to different products, different years, and different legal entities. The model will blend them, because blending nearby text is what it is for. In a regulated workflow that blend is not a style problem. It is a wrong system of record.
+
+Teams respond by stuffing metadata into the prompt: “you are helping with commercial claims.” That hint is not context. It is a wish. The retrieval set can still contain public-sector policy, a deprecated bulletin, and a slide that contradicts the bulletin. The model has no structured reason to prefer one.
+
+## A context layer is not a second database slogan
+
+A semantic context layer is the set of things an agent is allowed to treat as the world, resolved before generation:
+
+- The entities in play, resolved to identifiers the enterprise already trusts.
+- The relationships that are in scope for this task, not the entire graph.
+- The policy concepts those entities sit under, including which version is effective now.
+- The documents that are evidence for those nodes, rather than documents that merely sound related.
+- The entitlements of the actor, applied as a filter on nodes and fields, not as a sentence in the system prompt.
+
+Vectors remain. They search inside the neighborhood the layer has already bounded. Graph queries answer the questions similarity cannot: what depends on this service, which policy version was effective on this date, which product this member actually has. The generator sees a packet assembled from both, and the packet is small on purpose.
+
+## How an agent should ask
+
+An enterprise agent should not begin with “search the corpus.” It should begin with a resolution step. Who or what is this turn about? Which task class is this? Which node types and edge types is this task allowed to traverse? Only then does retrieval run, and it runs from those nodes outward.
+
+This is also where latency and cost become architectural. Resolution and task classification are narrow. They do not need the model you use to write. A small local model, or no model at all, can do them when the semantic layer is doing the real work. The expensive model receives a bounded packet and is asked to compose, not to discover the enterprise.
+
+## The minimum that is worth building
+
+Do not boil the ontology ocean. A useful first layer for one workflow usually fits on a page: the entities a single task must not get wrong, the few relationships that change the answer, the effective-dating rule, and the entitlement rule. Attach the documents you already have to those nodes so retrieval has somewhere legal to look.
+
+What you refuse to add matters as much. If a relationship is not sourced and not reviewed, it is not context. It is a rumor with a schema. Agents will treat it as true, because that is the instruction implicit in handing it over.
+
+## What changes in review
+
+Once the layer exists, evaluation changes shape. You stop asking only whether the answer “looks grounded.” You ask whether the packet contained the right entities, the effective policy, and no node the actor was not entitled to see. A wrong paragraph attached to the right node is a retrieval bug. A right-sounding paragraph attached to the wrong product is a context bug. They have different owners.
+
+Vector search will stay in the stack. It should stop pretending to be the stack. Enterprise agents need a world that has been named, bounded, and dated before they are asked to speak.

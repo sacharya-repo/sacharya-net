@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CaseStudies from '../../components/CaseStudies.astro';
+
+const studies = (await getCollection('case-studies')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="Architecture"
+  description="Selected architecture case studies by Shantanu Acharya: governed agentic systems, ontology-driven modernization, and low-latency decision routing."
+>
+  <div class="mx-auto max-w-6xl px-5 pt-16 sm:px-6 md:pt-24">
+    <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">Architecture</p>
+    <h1 class="mt-3 max-w-3xl text-4xl font-medium tracking-[-0.04em] text-neutral-950 sm:text-5xl dark:text-white">
+      Deep dives from production systems.
+    </h1>
+    <p class="mt-5 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+      Representative engagements. Client names stay confidential. The patterns, guardrails, and
+      measured effects are the point.
+    </p>
+  </div>
+  <CaseStudies studies={studies} intro={false} />
+</BaseLayout>

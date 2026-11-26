@@ -1,0 +1,53 @@
+---
+import FadeIn from './FadeIn';
+import Headshot from './Headshot.astro';
+import SocialLinks from './SocialLinks.astro';
+---
+
+<section class="mx-auto max-w-6xl px-5 pt-20 pb-20 sm:px-6 md:pt-28 md:pb-28">
+  <FadeIn client:visible>
+    <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_18.75rem] lg:items-start lg:gap-14 xl:gap-16">
+      <div class="min-w-0">
+        <p
+          class="inline-flex max-w-full items-center rounded-full border border-neutral-200 bg-white/60 px-3 py-1 font-mono text-[10px] tracking-[0.16em] text-neutral-600 uppercase sm:text-[11px] dark:border-neutral-800 dark:bg-white/5 dark:text-neutral-300"
+        >
+          <span class="mr-2 inline-block size-1.5 rounded-full bg-brass" aria-hidden="true"></span>
+          AI Architecture • Governed Autonomy • Enterprise Systems
+        </p>
+        <h1
+          class="mt-7 max-w-4xl text-[2.6rem] leading-[1.02] font-medium tracking-[-0.045em] text-neutral-950 sm:text-6xl lg:text-[3.55rem] xl:text-[4.1rem] dark:text-white"
+        >
+          Architecting Governed AI Systems &amp; Resilient Enterprise Platforms.
+        </h1>
+        <p class="mt-7 max-w-2xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
+          I help organizations move beyond experimental AI prototypes into production-grade,
+          policy-compliant agentic architectures, semantic context layers, and scalable cloud systems.
+        </p>
+
+        <div class="mt-8 flex items-end gap-6 lg:hidden">
+          <Headshot variant="hero" compact class="shrink-0" />
+        </div>
+
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <a
+            href="#architecture"
+            class="inline-flex h-11 items-center justify-center rounded-full bg-neutral-950 px-5 text-sm font-medium text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200"
+          >
+            Explore Architecture
+          </a>
+          <a
+            href="/writing"
+            class="inline-flex h-11 items-center justify-center rounded-full border border-neutral-300 px-5 text-sm font-medium text-neutral-900 transition hover:border-neutral-500 dark:border-neutral-700 dark:text-neutral-100 dark:hover:border-neutral-500"
+          >
+            Read My Writing
+          </a>
+        </div>
+        <SocialLinks class="mt-8" />
+      </div>
+
+      <aside class="hidden lg:block lg:justify-self-end lg:pt-1">
+        <Headshot variant="hero" />
+      </aside>
+    </div>
+  </FadeIn>
+</section>

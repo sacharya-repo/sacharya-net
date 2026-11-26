@@ -1,0 +1,80 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../lib/format';
+
+export async function getStaticPaths() {
+  const studies = await getCollection('case-studies');
+  return studies.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.summary}
+  ogType="article"
+  publishedTime={entry.data.pubDate.toISOString()}
+>
+  <article class="mx-auto max-w-3xl px-5 pt-16 pb-24 sm:px-6 md:pt-24">
+    <a
+      href="/case-studies"
+      class="font-mono text-[11px] tracking-[0.16em] text-neutral-500 uppercase hover:text-neutral-950 dark:hover:text-white"
+    >
+      Architecture
+    </a>
+    <h1 class="mt-5 text-4xl leading-[1.08] font-medium tracking-[-0.04em] text-neutral-950 sm:text-5xl dark:text-white">
+      {entry.data.title}
+    </h1>
+    <p class="mt-6 text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
+      {entry.data.summary}
+    </p>
+    <dl class="mt-8 grid gap-4 rounded-2xl border border-neutral-200 p-5 sm:grid-cols-3 dark:border-neutral-800">
+      <div>
+        <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Role</dt>
+        <dd class="mt-1 text-sm text-neutral-900 dark:text-neutral-100">{entry.data.role}</dd>
+      </div>
+      <div>
+        <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Domain</dt>
+        <dd class="mt-1 text-sm text-neutral-900 dark:text-neutral-100">{entry.data.domain}</dd>
+      </div>
+      <div>
+        <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Published</dt>
+        <dd class="mt-1 text-sm text-neutral-900 dark:text-neutral-100">
+          <time datetime={entry.data.pubDate.toISOString()}>{formatDate(entry.data.pubDate)}</time>
+        </dd>
+      </div>
+    </dl>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      {
+        entry.data.tags.map((tag) => (
+          <li class="rounded-full border border-neutral-200 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-neutral-500 uppercase dark:border-neutral-800">
+            {tag}
+          </li>
+        ))
+      }
+    </ul>
+    <dl class="mt-8 grid gap-4 sm:grid-cols-3">
+      {
+        entry.data.metrics.map((metric) => (
+          <div class="border-t border-neutral-200 pt-4 dark:border-neutral-800">
+            <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">{metric.label}</dt>
+            <dd class="mt-2 text-2xl font-medium tracking-[-0.03em] text-neutral-950 dark:text-white">
+              {metric.value}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+    <div
+      class="prose prose-site prose-neutral dark:prose-invert mt-12 max-w-none prose-headings:font-medium prose-headings:tracking-[-0.03em] prose-a:font-medium"
+    >
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

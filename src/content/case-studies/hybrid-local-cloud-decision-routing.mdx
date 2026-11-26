@@ -1,0 +1,57 @@
+---
+title: Low-Latency Decision Routing & Semantic Retrieval
+summary: Reducing inference latency and operational token spend by pairing lightweight local decision models with structured enterprise semantic layers.
+pubDate: 2026-03-12
+order: 3
+role: Enterprise & AI Architect
+domain: Member and provider service operations
+tags:
+  - Model Routing
+  - Semantic Layer
+  - Optimization
+  - Python
+metrics:
+  - value: "180ms"
+    label: p95 on the local path
+  - value: "62%"
+    label: Decision-tier tokens removed
+  - value: "1.8s"
+    label: Prior remote p95
+---
+
+## Context
+
+A service platform used a single remote model for almost every turn: classify the request, decide which policy applied, retrieve supporting text, and draft the reply. The draft was the only step that needed a large model. The first three steps were burning the same latency and the same token budget, and they were doing it on questions the enterprise had already structured.
+
+Operators felt it as lag. Finance felt it as a model invoice that did not track value. Architects felt it as a missing seam. There was no place in the request path where a cheap, deterministic decision could happen before a probabilistic one.
+
+## Architectural Approach
+
+The path was split into a decision tier and a synthesis tier.
+
+The decision tier is a small model running close to the application, in Python, with a fixed label set: intent, jurisdiction, product line, and whether the turn is allowed to draft at all. It does not see the full corpus. It sees a compact feature payload built from the semantic layer: the member or provider entity, the product, the open case, the policy concepts already linked to that case, and a handful of entitlements. The payload is structured. The model is choosing among labels the ontology already recognizes, not inventing a taxonomy.
+
+When the label is confident and the action is read-only, retrieval is a graph walk plus a narrow vector search over the documents attached to those nodes. Chunks that are not linked to the resolved entities are not candidates. The synthesis tier, a remote model, is called only to compose an answer from that bounded context, or skipped entirely when the decision tier can return a templated operational response.
+
+Low-confidence or conflicting labels fall through to the larger model, and those fall-throughs are logged as routing defects rather than hidden inside a transcript.
+
+## Governance & Guardrails
+
+The local model cannot call tools. It emits a decision record: labels, confidence, the semantic-layer nodes it was shown, and the route it selected. The control plane, not the model, decides whether that route may invoke a tool or a frontier model.
+
+Thresholds are configuration. A drop in confidence on a regulated intent forces the remote path and, for a subset of intents, a human. Prompts in the decision tier are not free text from the application. They are templates filled from typed fields, which keeps PHI out of the local logs except for identifiers the retention policy already allows.
+
+The router is evaluated offline on a frozen set of production turns before a threshold or a label change ships. A change that saves tokens while increasing misroutes does not ship.
+
+## Quantified Impact
+
+On the decision tier, after the split:
+
+- p95 latency on the local path was 180 milliseconds, against 1.8 seconds when the same classification had been done by the remote model.
+- Token spend on classification and routing fell 62 percent. The remaining spend sat on synthesis, which is the work the larger model is for.
+- Structured questions stopped being answered from globally similar chunks. Retrieval started from the entities and policy concepts the semantic layer had already resolved.
+- Fall-throughs became a visible queue of ontology and threshold gaps, which is a more honest backlog than “improve the prompt.”
+
+Speed was the visible result. The architectural result was a place in the system where a decision could be small, local, and governed before any expensive model was invited in.
+
+Figures describe a representative, client-confidential engagement and are illustrative of the architecture’s measured effect.

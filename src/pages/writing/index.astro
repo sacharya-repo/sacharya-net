@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WritingFeed from '../../components/WritingFeed.astro';
+
+const posts = (await getCollection('writing')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout
+  title="Writing"
+  description="Essays by Shantanu Acharya on semantic context layers, harness engineering, and pragmatic enterprise ontologies."
+>
+  <div class="mx-auto max-w-6xl px-5 pt-16 sm:px-6 md:pt-24">
+    <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">Writing</p>
+    <h1 class="mt-3 max-w-3xl text-4xl font-medium tracking-[-0.04em] text-neutral-950 sm:text-5xl dark:text-white">
+      Thought leadership for people who run the system.
+    </h1>
+  </div>
+  <WritingFeed
+    posts={posts}
+    showIndex={false}
+    heading="Recent essays"
+    lede="Architecture arguments, written so a skeptical engineering leader can use them."
+  />
+</BaseLayout>

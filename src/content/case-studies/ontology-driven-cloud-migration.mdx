@@ -1,0 +1,59 @@
+---
+title: Ontology-Driven Legacy Platform Migration
+summary: Accelerating complex enterprise platform modernization using semantic knowledge graphs for automated dependency and impact analysis.
+pubDate: 2026-06-04
+order: 2
+role: Enterprise & AI Architect
+domain: Healthcare platform modernization
+tags:
+  - Knowledge Graphs
+  - Ontology
+  - Cloud Architecture
+  - RAG
+metrics:
+  - value: "1,200+"
+    label: Systems and interfaces mapped
+  - value: "2 days"
+    label: Scoped impact analysis
+  - value: "3 weeks"
+    label: Prior workshop cycle
+---
+
+## Context
+
+The platform in question had grown for more than fifteen years: claims adjudication, enrollment, provider data, and a ring of integration services that nobody still employed could fully narrate. A cloud migration was funded. The plan, on paper, was a sequence of application moves.
+
+The plan failed its first serious question. What else breaks if this service moves? The answer lived in tribal knowledge, stale interface catalogs, and workshop series that took about three weeks whenever a wave boundary changed. Vector search over design documents did not help. The documents named systems inconsistently, and similarity is not dependency.
+
+Migration risk was an ontology problem wearing an infrastructure costume.
+
+## Architectural Approach
+
+We did not attempt to model the enterprise. We modeled the minimum graph required to plan a wave: systems, interfaces, data products, business processes, owning teams, and the environments those things run in.
+
+Each of those is a subtype under a small upper model — organization, object, event — so new sources could land without a new theory of the domain. Source systems of record fed the graph through idempotent upserts. Names were resolved with a mix of deterministic keys and a reviewed alias table. The model was not allowed to “discover” a dependency that no source asserted, unless a human accepted the inference.
+
+Documents still mattered. Design notes, runbooks, and interface specs were chunked and embedded, then attached to the graph node they described. Retrieval for an architect started at the node — a service, a file feed, a business process — and expanded across typed edges before it ever searched prose. RAG became a way to read the evidence for a dependency, not a way to guess the dependency.
+
+Wave planning was a query. Given a candidate set of systems, return upstream and downstream impact, the data products that cross the cut line, and the teams who own an edge the wave does not control.
+
+## Governance & Guardrails
+
+The ontology was a reviewed artifact, versioned next to the migration backlog. Adding an entity type or a relationship required a short architectural note, because every new edge type becomes something an agent or a planner will treat as true.
+
+Inferred edges were stored separately from asserted edges and could not drive a cutover decision until a domain owner accepted them. Access to the graph followed the same data classifications as the sources. A planning assistant built on top of it could answer impact questions. It could not open a change ticket or mark a system ready to move.
+
+Evaluation was blunt: for a sample of known production incidents, did the graph contain the dependency the incident actually used? Misses became source or modeling defects, not prompt tweaks.
+
+## Quantified Impact
+
+For the scoped domain:
+
+- More than 1,200 systems and interfaces were represented with an owner and at least one asserted relationship.
+- Impact analysis for a changed wave boundary fell from a three-week workshop cycle to under two days, because the first draft was a query and the workshop reviewed exceptions.
+- The first two cutovers surfaced fewer surprise dependencies than the program’s prior moves, which had been planned from catalogs and memory.
+- Document retrieval was still used, but as evidence attached to a node. Architects stopped treating a similar paragraph as a dependency.
+
+The migration did not become automatic. It became inspectable. That is the difference between a knowledge graph as a demo and a knowledge graph as a planning system.
+
+Figures describe a representative, client-confidential engagement and are illustrative of the architecture’s measured effect.

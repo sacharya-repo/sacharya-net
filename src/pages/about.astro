@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Bio from '../components/Bio.astro';
+import FadeIn from '../components/FadeIn';
+import { site } from '../data/site';
+
+const principles = [
+  {
+    title: 'Policy before autonomy',
+    body: 'An agent earns a wider action set only after the control plane can explain, stop, and audit the narrow one.',
+  },
+  {
+    title: 'Context before retrieval',
+    body: 'Vectors find passages. A semantic layer tells the system which entities, policies, and time bounds those passages belong to.',
+  },
+  {
+    title: 'Measurement before theater',
+    body: 'Latency, token spend, override rate, and policy bypasses are architecture metrics. Demo quality is not.',
+  },
+];
+---
+
+<BaseLayout
+  title="About"
+  description="Shantanu Acharya is an enterprise and AI architect focused on governed agentic systems, semantic context, and cloud-native modernization."
+>
+  <Bio />
+  <section class="border-t border-neutral-200 dark:border-neutral-800">
+    <div class="mx-auto max-w-6xl px-5 py-20 sm:px-6 md:py-24">
+      <FadeIn client:visible>
+        <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">How I work</p>
+        <h2 class="mt-3 max-w-xl text-3xl font-medium tracking-[-0.035em] text-neutral-950 dark:text-white">
+          Three constraints I do not negotiate.
+        </h2>
+        <ol class="mt-10 grid gap-6 md:grid-cols-3">
+          {
+            principles.map((principle, index) => (
+              <li class="rounded-2xl border border-neutral-200 p-6 dark:border-neutral-800">
+                <p class="font-mono text-[11px] tracking-[0.16em] text-neutral-500">
+                  0{index + 1}
+                </p>
+                <h3 class="mt-4 text-lg font-medium tracking-[-0.02em] text-neutral-950 dark:text-white">
+                  {principle.title}
+                </h3>
+                <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{principle.body}</p>
+              </li>
+            ))
+          }
+        </ol>
+        <a
+          href={`mailto:${site.email}`}
+          class="mt-10 inline-flex h-11 items-center rounded-full bg-neutral-950 px-5 text-sm font-medium text-white dark:bg-white dark:text-neutral-950"
+        >
+          Get in Touch
+        </a>
+      </FadeIn>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,78 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  variant?: 'hero' | 'bio';
+  compact?: boolean;
+  class?: string;
+}
+
+const { variant = 'hero', compact = false, class: className = '' } = Astro.props;
+
+const showCaption = !compact && variant === 'hero';
+---
+
+<figure
+  class:list={[
+    'group relative',
+    compact ? 'max-w-[10.5rem]' : variant === 'bio' ? 'max-w-[15rem]' : 'max-w-[18.5rem]',
+    'w-full',
+    className,
+  ]}
+>
+  <div
+    class="relative overflow-hidden rounded-2xl border border-neutral-200 bg-[linear-gradient(145deg,rgba(255,255,255,0.72),rgba(244,243,239,0.95))] p-1.5 shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_22px_48px_-28px_rgba(23,23,23,0.22)] dark:border-neutral-800 dark:bg-[linear-gradient(145deg,rgba(38,38,38,0.65),rgba(9,9,11,0.92))] dark:shadow-[0_24px_56px_-32px_rgba(0,0,0,0.65)]"
+  >
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-12 -right-10 h-36 w-36 rounded-full bg-[radial-gradient(circle,rgba(166,132,86,0.24),transparent_68%)] dark:bg-[radial-gradient(circle,rgba(196,164,112,0.2),transparent_70%)]"
+    >
+    </div>
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -bottom-16 -left-12 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(23,23,23,0.06),transparent_70%)] dark:bg-[radial-gradient(circle,rgba(255,255,255,0.04),transparent_72%)]"
+    >
+    </div>
+
+    <div class="relative overflow-hidden rounded-[0.72rem] border border-neutral-200/80 dark:border-neutral-800/90">
+      <img
+        src={site.headshot}
+        alt={`Portrait of ${site.name}, ${site.role}`}
+        width={935}
+        height={1024}
+        loading={variant === 'hero' && !compact ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchpriority={variant === 'hero' && !compact ? 'high' : 'auto'}
+        class="headshot-image aspect-[47/52] w-full object-cover object-[center_14%] saturate-[0.94] contrast-[1.02]"
+      />
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 bg-gradient-to-t from-neutral-950/30 via-transparent to-[#f4f3ef]/25 mix-blend-multiply dark:from-neutral-950/55 dark:via-neutral-950/10 dark:to-amber-50/[0.06] dark:mix-blend-normal"
+      >
+      </div>
+      <div aria-hidden="true" class="headshot-grain pointer-events-none absolute inset-0"> </div>
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 ring-1 ring-inset ring-neutral-950/5 dark:ring-white/10"
+      >
+      </div>
+    </div>
+  </div>
+
+  {
+    showCaption && (
+      <figcaption class="mt-4 border-t border-neutral-200 pt-4 dark:border-neutral-800">
+        <p class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">{site.role}</p>
+        <p class="mt-1.5 text-sm leading-snug text-neutral-600 dark:text-neutral-400">
+          Enterprise architecture, governed AI, and regulated healthcare platforms.
+        </p>
+      </figcaption>
+    )
+  }
+
+  {
+    variant === 'bio' && (
+      <figcaption class="sr-only">{site.name}</figcaption>
+    )
+  }
+</figure>

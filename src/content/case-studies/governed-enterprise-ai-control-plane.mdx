@@ -1,0 +1,61 @@
+---
+title: Enterprise AI Control Plane & Governed Autonomy
+summary: Designing runtime policy enforcement, deterministic model routing, and tool-use guardrails for multi-agent enterprise workflows.
+pubDate: 2026-09-18
+order: 1
+role: Enterprise & AI Architect
+domain: Regulated healthcare operations
+tags:
+  - Agentic AI
+  - Harness Engineering
+  - MCP
+  - Governance
+metrics:
+  - value: "100%"
+    label: Tool calls mediated
+  - value: "7"
+    label: Actions kept human-gated
+  - value: "41%"
+    label: Fewer off-policy routes
+---
+
+## Context
+
+A regulated healthcare enterprise had three agent prototypes in flight at once. One answered claims inquiries. One drafted provider correspondence. One searched internal policy. Each team had chosen its own model, stored prompts in application logs, and called downstream systems with a shared service credential.
+
+The demos worked. The operating model did not. Security could not say which agent had touched which system of record. Compliance could not reconstruct why a letter had been sent. Platform engineering could not put a ceiling on token spend, because every squad called a frontier model for work a classifier could have done.
+
+Leadership still wanted autonomy. Audit wanted a control plane. Those are the same architecture, drawn from opposite ends.
+
+## Architectural Approach
+
+The prototypes were not thrown away. They were moved behind a runtime that sits between agents and everything they are allowed to touch.
+
+Identity comes from the enterprise IdP. An agent does not hold a standing key to claims, correspondence, or the model gateway. It presents the user or service it is acting for, and the control plane mints a short-lived capability for that action only.
+
+Model choice is a routing decision, not a prompt habit. A task is classified first: extract, rank, draft, or decide. Classification and other narrow judgments run on an approved small model. Open-ended synthesis is allowed only on a named frontier model, and only when the task class permits it. Teams can request a new route. They cannot invent one in code.
+
+Tools are registered, not discovered. Each capability is an MCP server with a typed schema, an owner, a data classification, and a list of agents that may call it. The agent runtime cannot open an arbitrary HTTP connection. If a tool is not in the registry, it does not exist.
+
+Every allowed and denied decision is written to an append-only ledger with the policy version, the actor, the task class, the model route, and the tool schema hash. Reconstruction stops being a forensic project.
+
+## Governance & Guardrails
+
+Policy is evaluated before a tool executes, not after a transcript is reviewed. The decision uses the action, the data classes in scope, and the purpose recorded on the task. High-risk writes — creating a claims adjustment, sending a member communication, changing a provider record — stay behind a human approval, even when the agent assembled the request correctly.
+
+PHI minimization is a retrieval rule, not a reminder in the system prompt. The context assembler drops fields the task is not entitled to see before the model is called.
+
+Promotion is gated by an evaluation suite that includes policy-bypass attempts, tool-confusion fixtures, and a small set of golden tasks from operations. A new prompt or a new model route that fails the suite does not reach production. Each agent and each tool has a kill switch that does not require a redeploy of the calling application.
+
+## Quantified Impact
+
+After the control plane was in the path of the three workflows:
+
+- Every production tool invocation was mediated. Direct model and system credentials were removed from the agent hosts.
+- Seven action classes remained human-gated. The rest could proceed when policy allowed, which is what made the autonomy real rather than theatrical.
+- Off-policy model routes dropped 41 percent once task class, not developer preference, selected the model.
+- Time to answer “who did this, under which policy” moved from a multi-day log reconstruction to a ledger query.
+
+The agents did not become less capable. They became capable inside a boundary the enterprise could defend.
+
+Figures describe a representative, client-confidential engagement. They illustrate the measured effect of the architecture, not a public benchmark.

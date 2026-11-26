@@ -1,0 +1,133 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Class-based dark mode. Default theme is obsidian; the navbar toggle persists the choice. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-paper: #f4f3ef;
+  --color-obsidian: #09090b;
+  --color-brass: #a68456;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-paper);
+  background-image: radial-gradient(
+    ellipse 85% 48% at 50% -12%,
+    rgba(166, 138, 92, 0.16),
+    transparent 58%
+  );
+  background-attachment: fixed;
+  color: #171717;
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html.dark body {
+  background-color: var(--color-obsidian);
+  background-image:
+    radial-gradient(ellipse 80% 46% at 50% -14%, rgba(196, 164, 112, 0.16), transparent 58%),
+    radial-gradient(ellipse 32% 24% at 92% -4%, rgba(110, 132, 164, 0.12), transparent 52%);
+  color: #f5f5f4;
+}
+
+::selection {
+  background: rgba(166, 132, 86, 0.28);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 3px;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary {
+  list-style: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (scripting: none) {
+  .fm-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+.prose-site {
+  --tw-prose-body: #3f3f46;
+  --tw-prose-headings: #171717;
+  --tw-prose-links: #171717;
+  --tw-prose-bold: #171717;
+  --tw-prose-quotes: #3f3f46;
+  --tw-prose-quote-borders: #e5e5e5;
+  --tw-prose-code: #171717;
+  --tw-prose-hr: #e5e5e5;
+  --tw-prose-th-borders: #e5e5e5;
+  --tw-prose-td-borders: #e5e5e5;
+}
+
+.headshot-grain {
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+.dark .headshot-grain {
+  opacity: 0.1;
+  mix-blend-mode: soft-light;
+}
+
+.headshot-image {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .group:hover .headshot-image {
+    transform: scale(1.015);
+  }
+}
+
+.dark .prose-site {
+  --tw-prose-body: #d4d4d8;
+  --tw-prose-headings: #fafafa;
+  --tw-prose-links: #fafafa;
+  --tw-prose-bold: #fafafa;
+  --tw-prose-quotes: #d4d4d8;
+  --tw-prose-quote-borders: #262626;
+  --tw-prose-code: #fafafa;
+  --tw-prose-hr: #262626;
+  --tw-prose-th-borders: #262626;
+  --tw-prose-td-borders: #262626;
+}

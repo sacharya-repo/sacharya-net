@@ -1,0 +1,50 @@
+---
+title: "Harness Engineering: Building Deterministic Guardrails Around Probabilistic Models"
+description: Production agents need a deterministic shell around a probabilistic core. Policy, typed tools, and evaluation are the harness. The model is not.
+pubDate: 2026-09-02
+readingTime: 8 min read
+tags:
+  - Harness Engineering
+  - Governance
+  - MCP
+---
+
+A model is a probabilistic component. An enterprise workflow is not. The gap between those two facts is where most agent programs get hurt, and it is an engineering gap, not a prompting gap.
+
+Harness engineering is the discipline of putting a deterministic shell around that component: identity, routing, policy, typed tools, and an audit record that does not depend on the model telling the truth about itself.
+
+## The core stays probabilistic on purpose
+
+Trying to make the model deterministic is the wrong project. Sampling, ambiguity, and incomplete context are the point of using one. The harness does not remove judgment. It decides where judgment is allowed to land.
+
+A useful split is small. The model may classify, draft, rank, and propose. The harness decides whether a proposal is an action. Sending a letter, writing a financial adjustment, or calling a system of record is not a sentence the model emits. It is a tool call the runtime either executes or refuses, against a policy version, before any side effect.
+
+If your agent can do something because a prompt said “be careful,” you do not have a harness. You have a hope.
+
+## What belongs in the shell
+
+Identity is first. The runtime acts as a principal the enterprise already understands: a person, a service, a role. Shared API keys glued to an agent host are how you lose the plot in the first incident review.
+
+Routing is second. Task class selects the model. Developers do not. A narrow classification should not be allowed to wake a frontier model because that was the default client in the repository. Routes are configuration, reviewed like any other production change.
+
+Tools are third, and this is where MCP earns its place. A tool is a registered server with a schema, an owner, a data classification, and an allowlist of agents. The model can request a call. It cannot invent an endpoint. Schema validation is the difference between “the agent tried something odd” and “the agent wrote an unstructured payload into a core system.”
+
+Policy is fourth, and it runs before execution. Action, data class, purpose, confidence, and whether a human must approve. The decision is recorded with the policy version. Later, nobody has to ask the model what it thought it was doing.
+
+## Deterministic does not mean rigid
+
+A harness that blocks everything is just a feature flag with extra steps. The design problem is the width of the autonomous band. Read-only answers over entitled context can be wide. Writes to systems of record stay narrow, often human-gated, even when the proposal is excellent. Widening the band is a release decision backed by an evaluation suite: policy bypass, tool confusion, and a set of golden tasks from the people who own the workflow.
+
+Kill switches sit in the harness, not in a redeploy of every caller. If a tool or a model route misbehaves, the runtime stops offering it. The applications stay up.
+
+## What you measure
+
+Prompt quality is a weak production metric. The harness gives you better ones. Policy deny rate. Human override rate. Off-route model calls. Tool schema failures. Time to reconstruct an action. Token spend by task class, so synthesis is not quietly funding classification.
+
+Those numbers tell you whether autonomy is expanding inside a boundary or leaking around it. They also give security and operations something to hold that is not a transcript.
+
+## The shift in how teams build
+
+Harness engineering changes the unit of work. A squad no longer ships “an agent.” It ships a task class, a route, a tool registration, a policy, and a test that fails closed. The model can be swapped. The harness is the product.
+
+Probabilistic systems are worth running. They are not worth running naked. The shell is the architecture.

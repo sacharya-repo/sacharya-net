@@ -1,0 +1,20 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import CaseStudies from '../components/CaseStudies.astro';
+import WritingFeed from '../components/WritingFeed.astro';
+import Bio from '../components/Bio.astro';
+
+const studies = (await getCollection('case-studies')).sort((a, b) => a.data.order - b.data.order);
+const posts = (await getCollection('writing')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout>
+  <Hero />
+  <CaseStudies studies={studies} />
+  <WritingFeed posts={posts} />
+  <Bio />
+</BaseLayout>

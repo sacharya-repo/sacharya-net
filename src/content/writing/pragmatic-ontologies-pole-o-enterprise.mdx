@@ -1,0 +1,42 @@
+---
+title: "Minimum Viable Ontologies: Applying POLE+O Without Over-Engineering"
+description: POLE+O is a five-type starting frame, not an enterprise ontology. Use it to name the world a single workflow needs, then stop.
+pubDate: 2026-07-18
+readingTime: 7 min read
+tags:
+  - Ontology
+  - Knowledge Graphs
+  - POLE+O
+---
+
+The blank page is the most expensive part of a knowledge graph program. Committees respond by modeling the enterprise. The graph arrives late, covers everything, and answers nothing a specific workflow asked.
+
+POLE+O is a way to start smaller without pretending you have no model. It is five upper types, used as a classification layer: Person, Object, Location, Event, and Organization. It is not a domain ontology. It is a way to stop arguing about buckets long enough to model the relationships that change a decision.
+
+## What the five types are for
+
+Person covers people and the roles you can actually identify. Organization covers companies, plans, agencies, and teams when the team is a real actor. Location covers places that matter to the workflow, including facilities and regions, not every coordinate you could store. Event covers things that happen and have a time: an encounter, a claim line, a change, an incident. Object is the remainder that is still a thing: a policy contract, a system, a document, a device, a product.
+
+The value of the upper types is unification. A member, a broker, and an adjuster can all be persons with subtypes, resolved the same way, without forcing every source system to share a domain vocabulary on day one. Subtypes carry the domain. The upper type carries the join.
+
+Object is the dangerous bucket. If everything difficult becomes an Object, you have renamed the blank page. When a concept is a rule, a tariff, or a calculation, say so, or keep it out until a workflow forces the issue. POLE+O fits healthcare operations, logistics, and platform inventories well. It fits abstract financial instruments and deep formal ontologies less well. Do not drape it over SNOMED or FIBO and call the result integration.
+
+## A minimum viable ontology is a workflow, not a catalog
+
+Pick one agent or one migration question. List the entities that, if confused, would make the answer wrong. Map each to a POLE+O type and a subtype. Then add only the relationships that question traverses.
+
+For a claims assistant, that might be a person (member), an organization (plan, provider group), an object (contract, system), an event (claim, appeal), and a location only if site of service changes the rule. Edges such as “covered under,” “rendered by,” and “depends on” matter. The member’s entire life history does not.
+
+Write it so a reviewer who is not a graph specialist can reject a line. A short schema in version control beats a modeled universe in a slide. Effective dating and entitlement belong in that first page. A graph that cannot say which version of a policy was true on a date will be confidently wrong.
+
+## What not to automate yet
+
+Extraction is the temptation. Point a model at a corpus, let it propose entities, and watch the graph fill with aliases, hypotheticals, and relationships no source system stands behind. If you extract, constrain the model to the approved types and edges, and keep inferred edges out of any decision path until a person accepts them.
+
+Asserted knowledge and guessed knowledge can live in the same database. They cannot share the same authority. The minimum viable graph is the instance that passes that test for one workflow, not the instance with the most nodes.
+
+## When to grow
+
+Grow the ontology when a second workflow needs a type or an edge the first one does not have, and when someone can name the decision that edge changes. Adding a type because the source system has a table is how catalogs come back.
+
+POLE+O will feel too thin the moment your domain is real. That is the correct feeling. The five types got you moving. The relationships, the time bounds, and the refusal to model the rest are the actual architecture. Stop when the workflow can be answered and audited. That is the minimum, and it is enough.
