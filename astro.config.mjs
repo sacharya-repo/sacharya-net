@@ -8,7 +8,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://sacharya.net',
+  site: 'https://www.sacharya.net',
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'hover',

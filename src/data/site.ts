@@ -1,7 +1,7 @@
 export const site = {
   name: 'Shantanu Acharya',
   monogram: 'SA.',
-  url: 'https://sacharya.net',
+  url: 'https://www.sacharya.net',
   email: 'hello@sacharya.net',
   role: 'Enterprise & AI Architect',
   title: 'Shantanu Acharya — Architecting Governed AI Systems',

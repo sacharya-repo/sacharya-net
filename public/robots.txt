@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sacharya.net/sitemap-index.xml
+Sitemap: https://www.sacharya.net/sitemap-index.xml
