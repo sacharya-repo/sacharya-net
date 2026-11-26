@@ -10,6 +10,7 @@ const writing = defineCollection({
     pubDate: z.coerce.date(),
     readingTime: z.string(),
     tags: z.array(z.string()),
+    sourceUrl: z.string().url().optional(),
   }),
 });
 

@@ -1,12 +1,13 @@
 ---
 import FadeIn from './FadeIn';
 import Headshot from './Headshot.astro';
-import { affiliations, focusAreas, speakingTopics } from '../data/site';
+import { affiliations, executiveBio, focusAreas, honors, speakingTopics } from '../data/site';
 
 const columns = [
   { title: 'Core Focus Areas', items: focusAreas },
   { title: 'Advisory & Speaking Topics', items: speakingTopics },
-  { title: 'Professional Affiliations & Open Source', items: affiliations },
+  { title: 'Honors & Recognition', items: honors },
+  { title: 'Affiliations', items: affiliations },
 ];
 ---
 
@@ -22,23 +23,12 @@ const columns = [
           <Headshot variant="bio" class="md:sticky md:top-28" />
         </div>
         <div class="max-w-3xl space-y-5 text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
-          <p>
-            I work at the intersection of enterprise software engineering, cloud-native modernization,
-            and production AI systems. The last two decades have been spent inside large technology
-            programs, much of that in healthcare, taking platforms from strategy through the systems
-            that operators actually run.
-          </p>
-          <p>
-            At IBM I help complex organizations turn AI ambition into architectures that can survive
-            audit, cost, and scale. The durable work is rarely the model. It is the context the model
-            is allowed to see, the policy that bounds what an agent may do, and the cloud platform
-            underneath both.
-          </p>
+          {executiveBio.map((paragraph) => <p>{paragraph}</p>)}
         </div>
       </div>
     </FadeIn>
     <FadeIn client:visible className="mt-14">
-      <div class="grid gap-10 border-t border-neutral-200 pt-10 md:grid-cols-3 dark:border-neutral-800">
+      <div class="grid gap-10 border-t border-neutral-200 pt-10 sm:grid-cols-2 lg:grid-cols-4 dark:border-neutral-800">
         {
           columns.map((column) => (
             <div>

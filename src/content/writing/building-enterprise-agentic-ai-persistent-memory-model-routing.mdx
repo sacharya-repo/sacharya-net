@@ -1,0 +1,46 @@
+---
+title: "Building Enterprise Agentic AI: Persistent Memory, Model Routing, and Ontology-Driven Knowledge"
+description: A reference architecture for governed agentic systems—persistent structured memory, multi-model routing, ontology-driven graphs, and orchestration that augments microservices instead of replacing them.
+pubDate: 2026-05-03
+readingTime: 12 min read
+tags:
+  - Agentic AI
+  - Knowledge Graphs
+  - Model Routing
+  - Memory
+sourceUrl: https://medium.com/@s-acharya/building-enterprise-agentic-ai-persistent-memory-model-routing-and-ontology-driven-knowledge-ffb80c70c85d
+---
+
+Most AI agents in production still behave like tools: stateless, reactive, and forgetful. They complete a turn, emit an answer, and discard the execution trace. The same mistakes recur. Similar tasks pay the same token cost. Nothing durable is learned.
+
+Enterprise teams respond by enlarging prompts or chaining more models. That improves demos. It does not produce a system.
+
+## Agents orchestrate; services execute
+
+A common mistake is treating agents as a replacement for microservices. Agents and services live at different layers. Adjudication, enrollment, billing, and identity belong in governed services with deterministic contracts. Agents sit above them as an orchestration and reasoning layer: interpreting policy, retrieving context, proposing actions, and calling the right API when policy allows.
+
+A claims adjudicator should remain a microservice. An agent may interpret a policy excerpt, surface historical exceptions, assemble a packet for a human reviewer, and invoke the adjudicator. It should not become the adjudicator.
+
+## From prompt engineering to systems engineering
+
+The shift is architectural. An agent runtime should retrieve context, route work to an appropriate model, validate outputs, reflect on the run, and update memory only through controlled mechanisms. Prompt quality matters, but the durable design is the loop around the model.
+
+Three pillars carry most of the weight.
+
+**Persistent structured memory.** Raw chat logs are too noisy to store as learning. A reflection step should distill executions into facts, procedures, preferences, and outcomes—with confidence and provenance—that an ontology can validate.
+
+**Multi-model routing.** Not every step needs a frontier model. Classification, extraction, validation, and routing are often narrow tasks. A router sends each task class to the model that balances quality, latency, and cost under policy.
+
+**Ontology-driven knowledge.** A knowledge graph encodes domain truth: entities, relationships, effective dates, and policy concepts. A separate memory graph can capture agent experience. The ontology constrains what either graph is allowed to mean.
+
+## Dual graphs: context and experience
+
+Domain context and agent experience should not share one undifferentiated store. The knowledge graph answers what is true in the enterprise. The memory graph answers what this agent has learned from prior runs. Conflating them produces confident hallucinations backed by schema.
+
+Hybrid retrieval follows naturally. Vectors find passages inside a bounded neighborhood. Graph queries enforce structure, time, and entitlement. The agent receives a packet built from both, not from similarity alone.
+
+## Governance closes the loop
+
+Memory writes, tool calls, and model escalations deserve the same scrutiny as service APIs. Human review for high-risk classes, evaluation suites for policy bypass, and versioned ontologies are not optional extras. They are what make the architecture deployable in regulated environments.
+
+The next generation of agent platforms will be judged on whether they can remember, retrieve, route, validate, govern, and improve over time—not on whether the largest model in the chain can improvise an answer.
