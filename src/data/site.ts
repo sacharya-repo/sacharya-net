@@ -35,6 +35,11 @@ export const socials = [
     icon: 'medium',
   },
   {
+    label: 'Substack',
+    href: 'https://shantanua.substack.com',
+    icon: 'substack',
+  },
+  {
     label: 'Email',
     href: 'mailto:hello@sacharya.net',
     icon: 'mail',
