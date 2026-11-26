@@ -4,14 +4,29 @@ import { z } from 'astro/zod';
 
 const writing = defineCollection({
   loader: glob({ base: './src/content/writing', pattern: '**/*.{md,mdx}' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    pubDate: z.coerce.date(),
-    readingTime: z.string(),
-    tags: z.array(z.string()),
-    sourceUrl: z.string().url().optional(),
-  }),
+  schema: z
+    .object({
+      title: z.string(),
+      tags: z.array(z.string()),
+      description: z.string().optional(),
+      summary: z.string().optional(),
+      pubDate: z.coerce.date().optional(),
+      date: z.coerce.date().optional(),
+      readingTime: z.string().optional(),
+      readTime: z.string().optional(),
+      sourceUrl: z.string().url().optional(),
+      externalUrl: z.string().url().optional(),
+      canonicalUrl: z.string().url().optional(),
+    })
+    .refine((data) => Boolean(data.description ?? data.summary), {
+      message: 'Writing entries require description or summary.',
+    })
+    .refine((data) => Boolean(data.pubDate ?? data.date), {
+      message: 'Writing entries require pubDate or date.',
+    })
+    .refine((data) => Boolean(data.readingTime ?? data.readTime), {
+      message: 'Writing entries require readingTime or readTime.',
+    }),
 });
 
 const caseStudies = defineCollection({

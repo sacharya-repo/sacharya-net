@@ -2,6 +2,11 @@
 import type { CollectionEntry } from 'astro:content';
 import FadeIn from './FadeIn';
 import { formatDate } from '../lib/format';
+import {
+  writingDescription,
+  writingPubDate,
+  writingReadingTime,
+} from '../lib/writing-meta';
 
 interface Props {
   posts: CollectionEntry<'writing'>[];
@@ -47,7 +52,9 @@ const {
     </FadeIn>
     <ol class="border-t border-neutral-200 dark:border-neutral-800">
       {
-        posts.map((post, index) => (
+        posts.map((post, index) => {
+          const pubDate = writingPubDate(post.data);
+          return (
           <li>
             <FadeIn client:visible delay={index * 0.04}>
               <a
@@ -55,26 +62,27 @@ const {
                 class="group grid gap-3 border-b border-neutral-200 py-6 md:grid-cols-[8.5rem_1fr_auto] md:items-baseline md:gap-8 dark:border-neutral-800"
               >
                 <time
-                  datetime={post.data.pubDate.toISOString()}
+                  datetime={pubDate.toISOString()}
                   class="font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase"
                 >
-                  {formatDate(post.data.pubDate)}
+                  {formatDate(pubDate)}
                 </time>
                 <span>
                   <span class="block text-lg font-medium tracking-[-0.02em] text-neutral-950 group-hover:underline group-hover:decoration-neutral-300 group-hover:underline-offset-4 dark:text-white dark:group-hover:decoration-neutral-700">
                     {post.data.title}
                   </span>
                   <span class="mt-2 block max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                    {post.data.description}
+                    {writingDescription(post.data)}
                   </span>
                 </span>
                 <span class="font-mono text-[11px] tracking-[0.12em] text-neutral-500 uppercase">
-                  {post.data.readingTime}
+                  {writingReadingTime(post.data)}
                 </span>
               </a>
             </FadeIn>
           </li>
-        ))
+        );
+        })
       }
     </ol>
   </div>

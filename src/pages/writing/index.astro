@@ -3,21 +3,29 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import WritingIndexFeed from '../../components/WritingIndexFeed';
 import { formatDate } from '../../lib/format';
+import {
+  writingDescription,
+  writingPubDate,
+  writingReadingTime,
+} from '../../lib/writing-meta';
 import { writingTopicForSlug } from '../../lib/writing-topics';
 
 const posts = (await getCollection('writing')).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  (a, b) => writingPubDate(b.data).valueOf() - writingPubDate(a.data).valueOf(),
 );
 
-const listItems = posts.map((post) => ({
-  slug: post.id,
-  title: post.data.title,
-  description: post.data.description,
-  dateLabel: formatDate(post.data.pubDate),
-  dateTime: post.data.pubDate.toISOString(),
-  readingTime: post.data.readingTime,
-  topicId: writingTopicForSlug(post.id),
-}));
+const listItems = posts.map((post) => {
+  const pubDate = writingPubDate(post.data);
+  return {
+    slug: post.id,
+    title: post.data.title,
+    description: writingDescription(post.data),
+    dateLabel: formatDate(pubDate),
+    dateTime: pubDate.toISOString(),
+    readingTime: writingReadingTime(post.data),
+    topicId: writingTopicForSlug(post.id),
+  };
+});
 ---
 
 <BaseLayout
