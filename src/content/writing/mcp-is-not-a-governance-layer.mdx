@@ -1,0 +1,75 @@
+---
+title: "MCP Is Not a Governance Layer: Securing Tool-Calling Agents in Regulated Enterprises"
+date: "2026-11-28"
+summary: "Standardizing tool schemas via Model Context Protocol solves agent integration—but creates a new runtime authorization, context-blindness, and blast-radius problem."
+readTime: "9 min read"
+tags: ["Governance & Harness", "Agentic AI", "MCP"]
+---
+
+import ControlPlaneDiagram from '../../components/diagrams/ControlPlaneDiagram';
+
+Over the past year, the Model Context Protocol (MCP) has done for AI agents what USB-C did for hardware: it eliminated custom glue code. Instead of writing bespoke function-calling adapters for every internal API, database, or ticketing system, teams can expose a standardized MCP server once and let any frontier model discover and invoke its tools.
+
+That standardization is a genuine leap forward for developer velocity. It is also creating a dangerous architectural blind spot.
+
+Across enterprise engineering teams, **integration** is quietly being mistaken for **governance**. Because an MCP server uses typed JSON schemas and sits behind an authenticated network boundary, teams assume that connecting an agent to internal tools is safe to promote to production.
+
+It isn't. A standardized transport protocol tells an agent *how* to call a tool. It says nothing about *whether* that call should be permitted given the user's identity, the current business context, or the downstream blast radius.
+
+## The Integration Illusion
+
+Traditional enterprise microservices operate under predictable assumptions. A deterministic upstream service—like a checkout flow or a claims adjudication engine—validates business rules before invoking a downstream API. The caller is known, the execution path is static, and authorization happens at well-defined service boundaries.
+
+Agentic workflows invert that model. When you wire an LLM to an MCP server, **control flow moves inside a probabilistic reasoning loop**. The model decides which tools to call, in what sequence, and with what arguments based on dynamic context—including untrusted text retrieved from documents, emails, or external tickets.
+
+In that environment, exposing raw CRUD tools over MCP creates three distinct production failure modes.
+
+### 1. The Confused Deputy & Static Service Accounts
+Many early MCP deployments authenticate to backend databases or APIs using a single, broad service principal. When a user asks an agent to summarize a customer record or draft a status update, the MCP server executes the query under its own elevated credentials rather than propagating the end-user's scoped identity.
+
+Even when teams pass an OAuth token through, standard role-based access control (RBAC) is too coarse. Knowing that a user holds the role `Claims_Adjuster` tells you they are allowed to call `update_claim_status`. It does not verify whether they are assigned to *that specific claim* at *that specific moment*.
+
+### 2. Context-Blind Mutations
+Static API permissions evaluate syntax, not semantics. An agent might hold valid credentials to call `issue_refund(order_id, amount)` or `trigger_remediation(cluster_id)`. 
+
+If a subtle prompt injection hidden in a support ticket—or a simple hallucination during multi-step reasoning—convinces the model to pass `$45,000` instead of `$45`, a standard MCP server will happily validate the JSON schema (`amount: number`) and execute the mutation. The schema was valid; the business intent was catastrophic.
+
+### 3. Missing Causal Auditability
+In regulated industries like healthcare and financial services, logging "API endpoint `/v1/member/update` returned `200 OK`" is no longer sufficient. Auditors and risk committees ask a harder question: **Why did the system take that action?**
+
+Standard application logs capture the tool execution, while LLM telemetry captures raw token streams in a separate observability tool. Without a unified ledger linking user identity, retrieved context, policy evaluation, and tool invocation, reconstructing an incident becomes forensic guesswork.
+
+---
+
+## Reference Pattern: The Policy-Mediated Tool Gateway
+
+To run tool-calling agents safely in production, enterprises need an explicit control plane sitting **between the model's reasoning loop and the MCP tool layer**. 
+
+Instead of letting an agent talk directly to MCP servers, every proposed tool call must pass through a deterministic five-stage mediation loop:
+
+<ControlPlaneDiagram />
+
+### How Each Stage Constrains Risk
+
+1. **Identity Propagation (No Ambient Authority):** Every agent session inherits a short-lived, attenuated token representing the initiating user (or narrow workflow principal). MCP servers must reject calls that lack cryptographic user context.
+2. **Deterministic Routing & Tool Scoping:** Do not expose 80 tools in a single context window. Use a lightweight routing layer to classify the workflow first and mount only the 3–5 read or write tools required for that specific step.
+3. **Policy-as-Code Evaluation:** Before an MCP payload leaves the control plane, evaluate it against an external policy engine (such as Open Policy Agent or Cedar). Policy rules inspect both **who** is calling and **what** the arguments contain—enforcing dollar limits, entity ownership, time windows, and state transitions deterministically outside the LLM.
+4. **Human-Gated Escalation:** High-impact mutations (external communications, financial adjustments, clinical record updates) should return a `PENDING_APPROVAL` state from the gateway rather than executing immediately, surfacing the exact proposed payload to a human reviewer.
+5. **Immutable Causal Ledger:** Every mediated call writes a structured event capturing `session_id`, `user_id`, `context_hashes`, `policy_version`, `decision` (`ALLOW` / `DENY` / `ESCALATE`), and `tool_response`.
+
+---
+
+## Four Guardrails You Can Ship This Sprint
+
+You do not need to boil the ocean to harden existing MCP integrations. Start with four practical boundaries:
+
+* **Separate Read and Write Servers:** Split read-only retrieval tools from state-mutating tools into distinct MCP endpoints with separate authentication scopes and rate limits.
+* **Enforce Argument-Level Bounds in Code:** Never rely on system prompt instructions ("never issue refunds over $500") for safety. Enforce hard numeric, regex, and allow-list assertions inside the tool wrapper itself.
+* **Strip Untrusted Context Before Tool Selection:** Sanitize external documents, emails, and web payloads—or isolate them in a read-only summarization step—before passing state to an agent that holds write-capable tools.
+* **Log the Policy Decision, Not Just the API Call:** Add a structured middleware wrapper around your MCP client that records the input arguments, caller identity, and approval state on every invocation.
+
+Protocols like MCP solve how agents connect to the enterprise. **Harness engineering and runtime policy enforcement** determine whether those agents can be trusted once connected.
+
+---
+
+*Originally published at [sacharya.net](https://www.sacharya.net). If you are building governed agentic architectures or enterprise AI control planes, subscribe to **Systems, Not Prompts** for bi-weekly architectural notes.*
