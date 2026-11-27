@@ -1,4 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { NarrationSwitch } from './NarrationSwitch';
+import { canNarrate, stopSpeaking } from './narration';
+import { useStagePlayback } from './useStagePlayback';
 import {
   evaluate,
   HARD_CEILING,
@@ -42,6 +45,8 @@ export default function RuleWeaverDemo() {
   const [blockUnpublished, setBlockUnpublished] = useState(first.initial.blockUnpublished);
   const [trace, setTrace] = useState<EvaluationTrace | null>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [narration, setNarration] = useState(true);
+  const [voiceReady, setVoiceReady] = useState(true);
   const tokenRef = useRef(0);
 
   const input = useMemo<EvaluationInput>(
@@ -69,21 +74,30 @@ export default function RuleWeaverDemo() {
   const controlsKey = useMemo(() => evaluate(input).controls_key, [input]);
   const stale = trace !== null && trace.controls_key !== controlsKey;
   const settled = trace !== null && activeIndex >= trace.stages.length;
+  const verdict = useMemo(() => {
+    if (!trace) return '';
+    if (view === 'executive') {
+      return `${trace.decision}. ${trace.headline} ${trace.detail} ${trace.accountability}`;
+    }
+    return `${trace.decision}. ${trace.headline} Reason ${trace.reason}. Matched ${trace.matched_rules.join(', ') || 'none'}.`;
+  }, [trace, view]);
+  const { speaking } = useStagePlayback({
+    narration,
+    trace,
+    labels: STAGES,
+    activeIndex,
+    setActiveIndex,
+    tokenRef,
+    view,
+    verdict,
+  });
 
   useEffect(() => {
-    if (!trace || activeIndex < 0 || activeIndex >= trace.stages.length) return;
-    const token = tokenRef.current;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setActiveIndex(trace.stages.length);
-      return;
-    }
-    const timer = window.setTimeout(() => {
-      if (tokenRef.current === token) setActiveIndex((current) => current + 1);
-    }, 420);
-    return () => window.clearTimeout(timer);
-  }, [trace, activeIndex]);
+    setVoiceReady(canNarrate());
+  }, []);
 
   function applyScenario(id: ScenarioId) {
+    stopSpeaking();
     const scenario = SCENARIOS.find((item) => item.id === id);
     if (!scenario) return;
     setScenarioId(scenario.initial.scenarioId);
@@ -96,6 +110,7 @@ export default function RuleWeaverDemo() {
   }
 
   function runEvaluation() {
+    window.speechSynthesis?.resume();
     tokenRef.current += 1;
     setTrace(evaluate(input));
     setActiveIndex(0);
@@ -122,9 +137,19 @@ export default function RuleWeaverDemo() {
             Simulation · {POLICY_VERSION}
           </p>
           <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-            Same inputs, same ledger. The run stays in the browser.
+            Same inputs, same ledger. Narration reads each stage in the browser voice.
           </p>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <NarrationSwitch
+            enabled={narration}
+            speaking={speaking}
+            supported={voiceReady}
+            onChange={(next) => {
+              if (!next) stopSpeaking();
+              setNarration(next);
+            }}
+          />
         <fieldset className="shrink-0">
           <legend className="sr-only">View mode</legend>
           <div className="flex rounded-full border border-neutral-200 p-0.5 dark:border-neutral-800">
@@ -156,6 +181,7 @@ export default function RuleWeaverDemo() {
             ))}
           </div>
         </fieldset>
+        </div>
       </div>
 
       <div className="grid gap-8 p-5 lg:grid-cols-12 lg:p-6">

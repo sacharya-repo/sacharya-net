@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DqControlDiagram from '../../components/diagrams/DqControlDiagram';
+import DqControlDemo from '../../components/demos/DqControlDemo';
+
+const title = 'DQ Control';
+const description =
+  'An interactive model of a data-quality control plane: promote, quarantine, or reject a batch before it reaches the released view. Runs entirely in the browser.';
+const canonical = 'https://www.sacharya.net/demos/dq-control';
+---
+
+<BaseLayout title={title} description={description} canonical={canonical}>
+  <article class="mx-auto max-w-6xl px-5 pt-16 pb-24 sm:px-6 md:pt-24">
+    <a
+      href="/demos"
+      class="font-mono text-[11px] tracking-[0.16em] text-neutral-500 uppercase hover:text-neutral-950 dark:hover:text-white"
+    >
+      Demos
+    </a>
+    <h1 class="mt-5 max-w-3xl text-4xl leading-[1.08] font-medium tracking-[-0.04em] text-neutral-950 sm:text-5xl dark:text-white">
+      The pointer moves only when the gate agrees.
+    </h1>
+    <p class="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
+      DQ Control sits behind ingestion and decides which rows may reach silver, gold, and an outbound file. This page runs that gate on a synthetic eligibility extract and a synthetic encounter batch. Counts, rates, and dispositions only. No API, no record value, no host name.
+    </p>
+    <dl class="mt-8 grid gap-4 border-t border-neutral-200 pt-6 sm:grid-cols-3 dark:border-neutral-800">
+      <div>
+        <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Domain</dt>
+        <dd class="mt-1 text-sm text-neutral-900 dark:text-neutral-100">Healthcare data products</dd>
+      </div>
+      <div>
+        <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Policy</dt>
+        <dd class="mt-1 font-mono text-sm text-neutral-900 dark:text-neutral-100">profile-zz@w1</dd>
+      </div>
+      <div>
+        <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Runtime</dt>
+        <dd class="mt-1 text-sm text-neutral-900 dark:text-neutral-100">Browser, deterministic</dd>
+      </div>
+    </dl>
+
+    <section id="problem" class="mt-20 border-t border-neutral-200 pt-16 dark:border-neutral-800">
+      <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">01 — Problem & Constraints</p>
+      <h2 class="mt-3 max-w-xl text-3xl font-medium tracking-[-0.035em] text-neutral-950 dark:text-white">
+        A loaded file is not a release.
+      </h2>
+      <div class="mt-6 max-w-3xl space-y-4 text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+        <p>
+          Pipelines land eligibility extracts and encounter files on their way to a warehouse. Analytics, gold models, and outbound submissions are liable for what they read. The safe surface is a released view: gated rows joined to one versioned manifest, at the current pointer, with the quarantined set removed.
+        </p>
+        <p>
+          The control plane keeps the decision. It stores dispositions, a mode, a fingerprint stand-in, and an audit hash. Record values stay in the data plane. A model may attach a hypothesis. The mode is a pure function of policy, floor, and the autonomy ceiling, and the strictest input wins.
+        </p>
+      </div>
+      <ol class="mt-10 grid gap-4 md:grid-cols-3">
+        <li class="rounded-2xl border border-neutral-200 bg-white/80 p-5 dark:border-neutral-800 dark:bg-neutral-950/60">
+          <p class="font-mono text-[11px] tracking-[0.16em] text-neutral-500 uppercase">Boundary</p>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+            Checks run where the rows live. What crosses back is a count, a rate, a token, or a disposition. This page follows that rule: the sliders are rates.
+          </p>
+        </li>
+        <li class="rounded-2xl border border-neutral-200 bg-white/80 p-5 dark:border-neutral-800 dark:bg-neutral-950/60">
+          <p class="font-mono text-[11px] tracking-[0.16em] text-neutral-500 uppercase">Mode</p>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+            <span class="font-mono text-[13px]">A</span>, <span class="font-mono text-[13px]">H-ON</span>, <span class="font-mono text-[13px]">H-IN</span>, <span class="font-mono text-[13px]">H-IN-2</span>. <span class="font-mono text-[13px]">FAIL</span> is never autonomous. An advisory warning maps to the same mode as a pass.
+          </p>
+        </li>
+        <li class="rounded-2xl border border-neutral-200 bg-white/80 p-5 dark:border-neutral-800 dark:bg-neutral-950/60">
+          <p class="font-mono text-[11px] tracking-[0.16em] text-neutral-500 uppercase">Publish</p>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+            One manifest version carries the allow-list and the quarantine set. The pointer flips last. A lag keeps the previous version, quarantine included.
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="architecture" class="mt-20 border-t border-neutral-200 pt-16 dark:border-neutral-800">
+      <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">02 — System Architecture</p>
+      <h2 class="mt-3 max-w-xl text-3xl font-medium tracking-[-0.035em] text-neutral-950 dark:text-white">
+        Seven stages, then a pointer.
+      </h2>
+      <p class="mt-6 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+        The operating loop also lands the file, profiles it, and writes evidence after publish. The path below is the decision: seal the batch to a digest, bind the contract, evaluate, balance the hop, set the mode, propose a closed verb, and ask <span class="font-mono text-[13px]">can_release</span>. Promote advances the pointer. Quarantine holds severable rows for one steward. Reject withholds the unit. An open residual blocks release until two people and a step-up.
+      </p>
+      <div class="mt-8">
+        <DqControlDiagram />
+      </div>
+    </section>
+
+    <section id="sandbox" class="mt-20 border-t border-neutral-200 pt-16 dark:border-neutral-800">
+      <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">03 — Interactive Sandbox</p>
+      <h2 class="mt-3 max-w-xl text-3xl font-medium tracking-[-0.035em] text-neutral-950 dark:text-white">
+        Run the gate.
+      </h2>
+      <p class="mt-6 mb-8 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+        Four batches, one policy. Move the observed null rate, the drift ceiling, the gating switch, or the autonomy tier and run again. Executive view states what reaches downstream and who is accountable. Architect view shows the check trace, the mode line, and the full ledger. Narration reads that same run aloud, using the browser voice.
+      </p>
+      <DqControlDemo client:load />
+    </section>
+
+    <section id="tradeoffs" class="mt-20 border-t border-neutral-200 pt-16 dark:border-neutral-800">
+      <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">04 — Architectural Trade-Offs & Metrics</p>
+      <h2 class="mt-3 max-w-xl text-3xl font-medium tracking-[-0.035em] text-neutral-950 dark:text-white">
+        What the gate costs, and what it buys.
+      </h2>
+      <div class="mt-8 grid gap-8 md:grid-cols-2">
+        <div>
+          <h3 class="text-lg font-medium tracking-[-0.02em] text-neutral-950 dark:text-white">Advisory records, gating holds</h3>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Basic checks begin as advisory. A non-pass is a <span class="font-mono text-[13px]">TA_WARN</span>, and that warning is required to leave the mode where a pass would have left it. Promoting the check to gating is a two-person overlay. The switch on this page makes that split visible: the same null rate can promote, or it can quarantine.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium tracking-[-0.02em] text-neutral-950 dark:text-white">Quarantine travels with the allow-list</h3>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Severable rows, such as a coverage field over the ceiling and under the hard break, are a <span class="font-mono text-[13px]">QUARANTINE_ROWS</span> dry-run. A broken member reference is unit-scoped: the batch is rejected, and the manifest version that would have carried it is never written. Consumers read the released view only.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium tracking-[-0.02em] text-neutral-950 dark:text-white">A tier is a ceiling</h3>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            L4 may release a passing unit. L2 and L1 hold it for a person. A missing tier is treated as L1. Floors still raise the mode: an unbalanced hop is <span class="font-mono text-[13px]">H-IN-2</span> even when the tier is L4. Widening a pinned ceiling in production is a loosening, and a loosening takes two people.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium tracking-[-0.02em] text-neutral-950 dark:text-white">The hot path is a predicate</h3>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Evaluation is counts, closed checks, and a mode function. The same inputs produce the same ledger hash, which is why this page can run with the network idle. Remediation proposes a verb and a dry-run diff. The landed rows stay as they were. An advisor, if one is attached upstream, does not feed the mode.
+          </p>
+        </div>
+      </div>
+      <dl class="mt-10 grid gap-4 border-t border-neutral-200 pt-6 sm:grid-cols-4 dark:border-neutral-800">
+        <div>
+          <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Gate stages</dt>
+          <dd class="mt-2 text-2xl font-medium tracking-[-0.03em] text-neutral-950 dark:text-white">7</dd>
+        </div>
+        <div>
+          <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Modes</dt>
+          <dd class="mt-2 text-2xl font-medium tracking-[-0.03em] text-neutral-950 dark:text-white">4</dd>
+        </div>
+        <div>
+          <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Checks in the pack</dt>
+          <dd class="mt-2 text-2xl font-medium tracking-[-0.03em] text-neutral-950 dark:text-white">5</dd>
+        </div>
+        <div>
+          <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Network calls</dt>
+          <dd class="mt-2 text-2xl font-medium tracking-[-0.03em] text-neutral-950 dark:text-white">0</dd>
+        </div>
+      </dl>
+      <p class="mt-8 max-w-3xl text-sm leading-relaxed text-neutral-500">
+        Figures describe the public model on this page: synthetic profile ZZ, partners ZZ-IE and ZZ-MCO-A, and batches identified by count. They are not a production benchmark. Postgres holds the control plane. The data plane evaluates. A separate verifier attests the fingerprint before a real pointer flip. The hash here is a stand-in for that ledger, computed in the browser.
+      </p>
+    </section>
+  </article>
+</BaseLayout>

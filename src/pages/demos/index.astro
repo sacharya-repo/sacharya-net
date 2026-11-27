@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const title = 'Demos';
 const description =
-  'Interactive architecture demos by Shantanu Acharya. RuleWeaver runs a governed claim-rule evaluation in the browser.';
+  'Interactive architecture demos by Shantanu Acharya. RuleWeaver runs a governed claim-rule evaluation. DQ Control runs a data-quality gate. Both stay in the browser.';
 const canonical = 'https://www.sacharya.net/demos';
 ---
 
@@ -13,13 +13,14 @@ const canonical = 'https://www.sacharya.net/demos';
     <h1 class="mt-3 max-w-3xl text-4xl font-medium tracking-[-0.04em] text-neutral-950 sm:text-5xl dark:text-white">
       Run the architecture.
     </h1>
-    <p class="mt-5 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+      <p class="mt-5 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
       Short, deterministic models of systems described elsewhere on this site. They stay in the browser.
     </p>
 
+    <div class="mt-12 grid gap-4">
     <a
       href="/demos/ruleweaver"
-      class="group mt-12 flex flex-col justify-between gap-8 rounded-2xl border border-neutral-200 bg-white/80 p-7 transition hover:-translate-y-0.5 sm:p-9 md:flex-row md:items-end dark:border-neutral-800 dark:bg-neutral-950/60"
+      class="group flex flex-col justify-between gap-8 rounded-2xl border border-neutral-200 bg-white/80 p-7 transition hover:-translate-y-0.5 sm:p-9 md:flex-row md:items-end dark:border-neutral-800 dark:bg-neutral-950/60"
     >
       <div>
         <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">01 — RuleWeaver</p>
@@ -45,5 +46,35 @@ const canonical = 'https://www.sacharya.net/demos';
         Open the showcase
       </span>
     </a>
+
+    <a
+      href="/demos/dq-control"
+      class="group flex flex-col justify-between gap-8 rounded-2xl border border-neutral-200 bg-white/80 p-7 transition hover:-translate-y-0.5 sm:p-9 md:flex-row md:items-end dark:border-neutral-800 dark:bg-neutral-950/60"
+    >
+      <div>
+        <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">02 — DQ Control</p>
+        <h2 class="mt-4 max-w-xl text-2xl font-medium tracking-[-0.03em] text-neutral-950 sm:text-3xl dark:text-white">
+          The pointer moves only when the gate agrees.
+        </h2>
+        <p class="mt-4 max-w-xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          A data-quality gate with promote, quarantine, and reject. Move the null rate, the ceiling, or the autonomy tier and read the ledger. Executive and architect views, no API.
+        </p>
+        <ul class="mt-6 flex flex-wrap gap-2">
+          <li class="rounded-full border border-neutral-200 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-neutral-500 uppercase dark:border-neutral-800">
+            Control plane
+          </li>
+          <li class="rounded-full border border-neutral-200 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-neutral-500 uppercase dark:border-neutral-800">
+            Data quality
+          </li>
+          <li class="rounded-full border border-neutral-200 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-neutral-500 uppercase dark:border-neutral-800">
+            Governance
+          </li>
+        </ul>
+      </div>
+      <span class="text-sm text-neutral-600 underline decoration-neutral-300 underline-offset-4 group-hover:text-neutral-950 dark:text-neutral-400 dark:decoration-neutral-700 dark:group-hover:text-white">
+        Open the showcase
+      </span>
+    </a>
+    </div>
   </div>
 </BaseLayout>

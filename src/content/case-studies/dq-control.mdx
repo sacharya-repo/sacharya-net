@@ -1,0 +1,52 @@
+---
+title: DQ Control — The Pointer Moves on a Gate
+summary: A data-quality control plane that seals, evaluates, and publishes healthcare batches so a bad row reaches the released view only with a disposition, a mode, and, when the mode requires it, a person.
+pubDate: 2026-11-26
+order: 5
+role: Enterprise & AI Architect
+domain: Healthcare data products
+tags:
+  - Data Quality
+  - Control Plane
+  - Governance
+  - Medallion
+metrics:
+  - value: "7"
+    label: Gate stages
+  - value: "4"
+    label: Autonomy modes
+  - value: "0"
+    label: Network calls in the demo
+---
+
+import DqControlDemo from '../../components/demos/DqControlDemo';
+
+## Context
+
+A file that landed is not a data product. Eligibility extracts and encounter batches feed silver, gold, and outbound files that other systems treat as fact. The failure mode is a pipeline gate that checks a box in the orchestrator while consumers read the base table, including rows that failed a contract.
+
+The operating requirement is a released view. One manifest version carries the units that may be read and the row sequences that are quarantined. The pointer flips last. A lag leaves the previous version in place, so a delay cannot reveal a quarantined row.
+
+The full brief, including the architecture figure and the trade-offs, is the [DQ Control showcase](/demos/dq-control). The sandbox below is the same gate.
+
+## Architectural Approach
+
+The control plane decides. The data plane computes. Checks for completeness, validity, uniqueness, referential integrity, and hop balance run where the rows live, and only counts, rates, and dispositions come back.
+
+Dispositions have a total order. The worst one selects the policy mode for the authority. Floors then raise it: a failing check is never autonomous, and an unbalanced hop requires two people. An autonomy tier is a ceiling on top of that. L4 may release a pass. L2 and L1 hold the unit. A missing tier is treated as L1.
+
+Basic checks start advisory. A warning is recorded and the mode stays where a pass would have left it. A two-person promotion makes the same check gating, which is when a soft null-rate breach can quarantine rows and a broken member reference can reject the unit.
+
+## Governance & Guardrails
+
+Remediation proposes a closed verb and a dry-run: release, quarantine rows, reject, or hold. It does not rewrite the landed file. Human release binds the decision to the fingerprint and the quarantine set. The highest mode adds a second person and a step-up. The verifier is a separate identity. Publish waits on its attestation.
+
+An advisory model may comment on a card. The mode function does not read that comment.
+
+## Try the gate
+
+The pack is synthetic profile ZZ. Rates, rule ids, and batch tokens on this page are a public model of the mechanics, not a production policy and not a client benchmark.
+
+<div class="not-prose my-10">
+  <DqControlDemo client:load />
+</div>
