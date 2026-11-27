@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
-import { site, socials } from '../data/site';
+import { repositories, site, socials } from '../data/site';
 
 interface Props {
   title?: string;
@@ -85,7 +85,12 @@ const pageTitle = title === site.title ? title : `${title} — Shantanu Acharya`
       jobTitle: site.role,
       description: site.description,
       image: new URL(site.headshot, site.url).toString(),
-      sameAs: socials.filter((item) => item.icon !== 'mail').map((item) => item.href),
+      sameAs: [
+        ...socials.flatMap((item) =>
+          'href' in item && item.icon !== 'mail' ? [item.href] : [],
+        ),
+        ...repositories.map((repo) => repo.href),
+      ],
     })} />
   </head>
   <body>

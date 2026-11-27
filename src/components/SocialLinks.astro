@@ -1,12 +1,19 @@
 ---
-import { socials } from '../data/site';
+import { repositories, socials } from '../data/site';
 
 interface Props {
   class?: string;
   ariaLabelledSection?: string;
+  reposPlacement?: 'down' | 'up';
+  reposAlign?: 'start' | 'end';
 }
 
-const { class: className = '', ariaLabelledSection } = Astro.props;
+const {
+  class: className = '',
+  ariaLabelledSection,
+  reposPlacement = 'down',
+  reposAlign = 'start',
+} = Astro.props;
 
 const paths: Record<(typeof socials)[number]['icon'], string> = {
   linkedin:
@@ -15,16 +22,20 @@ const paths: Record<(typeof socials)[number]['icon'], string> = {
     'M12 .3C5.37.3 0 5.67 0 12.3c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.28-.01-1.04-.02-2.04-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.9-.01 3.29 0 .32.22.69.83.57A12 12 0 0 0 24 12.3C24 5.67 18.63.3 12 .3z',
   medium:
     'M13.54 12a6.8 6.8 0 0 1-6.77 6.82A6.8 6.8 0 0 1 0 12a6.8 6.8 0 0 1 6.77-6.82A6.8 6.8 0 0 1 13.54 12zm7.42 0c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42zM24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z',
+  substack: '',
   mail: 'M2.2 5.2h19.6c.7 0 1.2.5 1.2 1.2v11.2c0 .7-.5 1.2-1.2 1.2H2.2c-.7 0-1.2-.5-1.2-1.2V6.4c0-.7.5-1.2 1.2-1.2zm.4 1.6v.3l9.1 6.1c.2.1.4.1.6 0l9.1-6.1v-.3H2.6zm18.8 11.2V9.1l-8.2 5.5c-.7.5-1.7.5-2.4 0L2.6 9.1v8.9h18.8z',
 };
 
 const ariaByIcon: Record<(typeof socials)[number]['icon'], string> = {
   linkedin: 'LinkedIn',
-  github: 'GitHub',
+  github: 'GitHub repositories',
   medium: 'Medium',
   substack: 'Substack',
   mail: 'Email',
 };
+
+const iconButton =
+  'inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-neutral-200 text-neutral-600 transition hover:border-neutral-400 hover:text-neutral-950 dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-white';
 ---
 
 <ul
@@ -33,50 +44,128 @@ const ariaByIcon: Record<(typeof socials)[number]['icon'], string> = {
 >
   {
     socials.map((item) => (
-      <li>
-        <a
-          href={item.href}
-          aria-label={ariaByIcon[item.icon]}
-          {...(item.href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}
-          class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-600 transition hover:border-neutral-400 hover:text-neutral-950 dark:border-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-white"
-        >
-          {
-            item.icon === 'mail' ? (
-              <svg
-                viewBox="0 0 24 24"
-                class="size-4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.75"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <rect x="3" y="5" width="18" height="14" rx="2" />
-                <path d="m4 7 8 6 8-6" />
-              </svg>
-            ) : item.icon === 'substack' ? (
-              <svg
-                viewBox="0 0 24 24"
-                class="size-4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.75"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M5.5 5.5h13v12.5l-6.5-3.75-6.5 3.75V5.5z" />
-                <path d="M9 10.5h6M9 13.5h6M9 16.5h4" />
-              </svg>
-            ) : (
+      <li class="relative">
+        {item.icon === 'github' ? (
+          <details data-repos>
+            <summary class={iconButton} aria-label={ariaByIcon.github}>
               <svg viewBox="0 0 24 24" class="size-3.5" fill="currentColor" aria-hidden="true">
-                <path d={paths[item.icon]} />
+                <path d={paths.github} />
               </svg>
-            )
-          }
-        </a>
+            </summary>
+            <div
+              class:list={[
+                'absolute z-30 w-64 rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-950',
+                reposPlacement === 'up'
+                  ? 'top-full mt-2 md:top-auto md:bottom-full md:mt-0 md:mb-2'
+                  : 'top-full mt-2',
+                reposAlign === 'end' ? 'left-0 md:left-auto md:right-0' : 'left-0',
+              ]}
+            >
+              <p class="px-3 pt-2 pb-1 font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">
+                Repositories
+              </p>
+              <ul>
+                {repositories.map((repo) => (
+                  <li>
+                    <a
+                      href={repo.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      class="block rounded-xl px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-900"
+                    >
+                      <span class="block text-sm font-medium text-neutral-950 dark:text-white">
+                        {repo.name}
+                      </span>
+                      <span class="mt-0.5 block text-xs leading-relaxed text-neutral-500">
+                        {repo.description}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+        ) : (
+          <a
+            href={item.href}
+            aria-label={ariaByIcon[item.icon]}
+            {...(item.href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}
+            class={iconButton}
+          >
+            {
+              item.icon === 'mail' ? (
+                <svg
+                  viewBox="0 0 24 24"
+                  class="size-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="m4 7 8 6 8-6" />
+                </svg>
+              ) : item.icon === 'substack' ? (
+                <svg
+                  viewBox="0 0 24 24"
+                  class="size-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5.5 5.5h13v12.5l-6.5-3.75-6.5 3.75V5.5z" />
+                  <path d="M9 10.5h6M9 13.5h6M9 16.5h4" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" class="size-3.5" fill="currentColor" aria-hidden="true">
+                  <path d={paths[item.icon]} />
+                </svg>
+              )
+            }
+          </a>
+        )}
       </li>
     ))
   }
 </ul>
+
+<style>
+  details[data-repos]:not([open]) > :not(summary) {
+    display: none;
+  }
+</style>
+
+<script>
+  const closeOpenRepos = (except?: Element) => {
+    document.querySelectorAll('details[data-repos][open]').forEach((el) => {
+      if (el !== except) el.removeAttribute('open');
+    });
+  };
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    document.querySelectorAll('details[data-repos][open]').forEach((el) => {
+      if (!el.contains(target)) el.removeAttribute('open');
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeOpenRepos();
+  });
+
+  document.addEventListener(
+    'toggle',
+    (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLDetailsElement) || !target.matches('[data-repos]') || !target.open) return;
+      closeOpenRepos(target);
+    },
+    true,
+  );
+</script>

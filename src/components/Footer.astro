@@ -18,7 +18,11 @@ const year = new Date().getFullYear();
       </div>
     </div>
     <div class="flex flex-col items-start gap-4 md:items-end">
-      <SocialLinks ariaLabelledSection="Connect with Shantanu Acharya" />
+      <SocialLinks
+        ariaLabelledSection="Connect with Shantanu Acharya"
+        reposPlacement="up"
+        reposAlign="end"
+      />
       <p class="font-mono text-[11px] tracking-[0.08em] text-neutral-500 uppercase">
         © {year} {site.name}
       </p>

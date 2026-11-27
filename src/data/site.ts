@@ -19,6 +19,14 @@ export const nav = [
   { href: '/about', label: 'About' },
 ] as const;
 
+export const repositories = [
+  {
+    name: 'RuleWeaver',
+    description: 'Rules, then generated code.',
+    href: 'https://github.com/sacharya-repo/RuleWeaver',
+  },
+] as const;
+
 export const socials = [
   {
     label: 'LinkedIn',
@@ -27,7 +35,6 @@ export const socials = [
   },
   {
     label: 'GitHub',
-    href: 'https://github.com/sacharya-repo',
     icon: 'github',
   },
   {
@@ -78,5 +85,5 @@ export const speakingTopics = [
 export const affiliations = [
   'IBM — Enterprise & AI Architect (Richmond, Virginia)',
   'Healthcare payer ecosystem: claims, clinical data, interoperability',
-  'Open source & reference architectures — github.com/sacharya-repo',
+  'Open source reference architecture — RuleWeaver',
 ] as const;
