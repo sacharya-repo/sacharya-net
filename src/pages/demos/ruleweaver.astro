@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RuleWeaverDiagram from '../../components/diagrams/RuleWeaverDiagram';
+import RuleWeaverDemo from '../../components/demos/RuleWeaverDemo';
+
+const title = 'RuleWeaver';
+const description =
+  'An interactive model of RuleWeaver: deterministic claim-rule evaluation with allow, escalate, and deny, running entirely in the browser.';
+const canonical = 'https://www.sacharya.net/demos/ruleweaver';
+---
+
+<BaseLayout title={title} description={description} canonical={canonical}>
+  <article class="mx-auto max-w-6xl px-5 pt-16 pb-24 sm:px-6 md:pt-24">
+    <a
+      href="/demos"
+      class="font-mono text-[11px] tracking-[0.16em] text-neutral-500 uppercase hover:text-neutral-950 dark:hover:text-white"
+    >
+      Demos
+    </a>
+    <h1 class="mt-5 max-w-3xl text-4xl leading-[1.08] font-medium tracking-[-0.04em] text-neutral-950 sm:text-5xl dark:text-white">
+      Governed rules, before any generated code.
+    </h1>
+    <p class="mt-6 max-w-2xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
+      RuleWeaver extracts business rules from metadata and documents, keeps them in a versioned registry, and only then generates dbt or PySpark. This page runs the evaluation half of that system on a synthetic claims pack. No API, no model call, no member identifier.
+    </p>
+    <dl class="mt-8 grid gap-4 border-t border-neutral-200 pt-6 sm:grid-cols-3 dark:border-neutral-800">
+      <div>
+        <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Domain</dt>
+        <dd class="mt-1 text-sm text-neutral-900 dark:text-neutral-100">Healthcare payer claims</dd>
+      </div>
+      <div>
+        <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Policy</dt>
+        <dd class="mt-1 font-mono text-sm text-neutral-900 dark:text-neutral-100">claims-adjudication@1.4.2</dd>
+      </div>
+      <div>
+        <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Runtime</dt>
+        <dd class="mt-1 text-sm text-neutral-900 dark:text-neutral-100">Browser, deterministic</dd>
+      </div>
+    </dl>
+
+    <section id="problem" class="mt-20 border-t border-neutral-200 pt-16 dark:border-neutral-800">
+      <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">01 — Problem & Constraints</p>
+      <h2 class="mt-3 max-w-xl text-3xl font-medium tracking-[-0.035em] text-neutral-950 dark:text-white">
+        A candidate rule is not an adjudication.
+      </h2>
+      <div class="mt-6 max-w-3xl space-y-4 text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+        <p>
+          Payer rules live in policy documents and in the shape of the warehouse: member, claim, provider, network, billed amount. A model can pull a candidate out of that material, attach an evidence excerpt, and score its confidence. That candidate is still a draft. It does not get to move a claim, and it does not get to be pasted into a transformation.
+        </p>
+        <p>
+          The constraint is the registry. A rule has a lifecycle — draft, review, approved, published, deprecated — a closed set of operators, and a version. Simulation runs before publication. Governance can hold a graph patch or an approval without a redeploy. Generated ELT references the rule id. The threshold stays in the registry, where it can change without a hunt through SQL.
+        </p>
+      </div>
+      <ol class="mt-10 grid gap-4 md:grid-cols-3">
+        <li class="rounded-2xl border border-neutral-200 bg-white/80 p-5 dark:border-neutral-800 dark:bg-neutral-950/60">
+          <p class="font-mono text-[11px] tracking-[0.16em] text-neutral-500 uppercase">Lifecycle</p>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+            Auto-apply requires <span class="font-mono text-[13px]">published</span>. Review and draft can be matched for inspection. They cannot approve a claim.
+          </p>
+        </li>
+        <li class="rounded-2xl border border-neutral-200 bg-white/80 p-5 dark:border-neutral-800 dark:bg-neutral-950/60">
+          <p class="font-mono text-[11px] tracking-[0.16em] text-neutral-500 uppercase">Operators</p>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+            Twelve operators are valid. <span class="font-mono text-[13px]">eq</span>, <span class="font-mono text-[13px]">lte</span>, <span class="font-mono text-[13px]">in</span>, and the rest of the allow-list. Anything else fails validation.
+          </p>
+        </li>
+        <li class="rounded-2xl border border-neutral-200 bg-white/80 p-5 dark:border-neutral-800 dark:bg-neutral-950/60">
+          <p class="font-mono text-[11px] tracking-[0.16em] text-neutral-500 uppercase">Writes</p>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+            Escalate returns an approval with <span class="font-mono text-[13px]">can_proceed: false</span>. Deny and schema failure withhold the artifact. The ledger still records the row.
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="architecture" class="mt-20 border-t border-neutral-200 pt-16 dark:border-neutral-800">
+      <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">02 — System Architecture</p>
+      <h2 class="mt-3 max-w-xl text-3xl font-medium tracking-[-0.035em] text-neutral-950 dark:text-white">
+        Seven stages, three outcomes.
+      </h2>
+      <p class="mt-6 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+        Upstream, document intelligence and the ontology graph propose structure: concepts, aliases, evidence, a confidence. The path below is what happens once a rule is in the registry and a claim arrives. Context loads the policy. Alignment binds fields onto the healthcare ontology. Match and validate are deterministic. Govern and simulate decide whether an artifact is even eligible. The ledger is written for every outcome.
+      </p>
+      <div class="mt-8">
+        <RuleWeaverDiagram />
+      </div>
+    </section>
+
+    <section id="sandbox" class="mt-20 border-t border-neutral-200 pt-16 dark:border-neutral-800">
+      <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">03 — Interactive Sandbox</p>
+      <h2 class="mt-3 max-w-xl text-3xl font-medium tracking-[-0.035em] text-neutral-950 dark:text-white">
+        Run the registry.
+      </h2>
+      <p class="mt-6 mb-8 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+        Four claims, the same policy pack. Move the billed amount, the auto-approve ceiling, or the confidence floor and run again. Executive view states the outcome and who is accountable. Architect view shows the predicate trace, the latency of each stage, and the full ledger.
+      </p>
+      <RuleWeaverDemo client:load />
+    </section>
+
+    <section id="tradeoffs" class="mt-20 border-t border-neutral-200 pt-16 dark:border-neutral-800">
+      <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">04 — Architectural Trade-Offs & Metrics</p>
+      <h2 class="mt-3 max-w-xl text-3xl font-medium tracking-[-0.035em] text-neutral-950 dark:text-white">
+        What the split costs, and what it buys.
+      </h2>
+      <div class="mt-8 grid gap-8 md:grid-cols-2">
+        <div>
+          <h3 class="text-lg font-medium tracking-[-0.02em] text-neutral-950 dark:text-white">Rules stay out of the model</h3>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            A mapping records which rules applied. The dbt model names them. It does not inline the ceiling. Changing policy is a new version and a new simulation. The cost is a registry join at generation time, and a refusal to hot-edit generated SQL.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium tracking-[-0.02em] text-neutral-950 dark:text-white">The hot path is not a model call</h3>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Extraction can use a model. Evaluation of a published rule does not. Operators compare field and value, which is why this page can promise the same checksum for the same input. Milliseconds here. The model stays upstream, where being slow does not adjudicate a claim.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium tracking-[-0.02em] text-neutral-950 dark:text-white">The gap is a decision</h3>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Amounts between the auto-approve ceiling and the hard stop match nothing on purpose. Validation records the gap. Governance opens a review and sets can_proceed to false. Filling that band inside a prompt would turn an exception into a payment.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-lg font-medium tracking-[-0.02em] text-neutral-950 dark:text-white">Low confidence has no direction</h3>
+          <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            A matched rule under the floor escalates whether its action would have approved or denied. Weak extractions do not get to move money either way. The floor is a control on this page so that behavior is visible.
+          </p>
+        </div>
+      </div>
+      <dl class="mt-10 grid gap-4 border-t border-neutral-200 pt-6 sm:grid-cols-4 dark:border-neutral-800">
+        <div>
+          <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Operators</dt>
+          <dd class="mt-2 text-2xl font-medium tracking-[-0.03em] text-neutral-950 dark:text-white">12</dd>
+        </div>
+        <div>
+          <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Lifecycle states</dt>
+          <dd class="mt-2 text-2xl font-medium tracking-[-0.03em] text-neutral-950 dark:text-white">5</dd>
+        </div>
+        <div>
+          <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Evaluation stages</dt>
+          <dd class="mt-2 text-2xl font-medium tracking-[-0.03em] text-neutral-950 dark:text-white">7</dd>
+        </div>
+        <div>
+          <dt class="font-mono text-[10px] tracking-[0.16em] text-neutral-500 uppercase">Network calls</dt>
+          <dd class="mt-2 text-2xl font-medium tracking-[-0.03em] text-neutral-950 dark:text-white">0</dd>
+        </div>
+      </dl>
+      <p class="mt-8 max-w-3xl text-sm leading-relaxed text-neutral-500">
+        Figures describe the public model on this page: a synthetic policy pack and a claims payload with no member, provider, or host identity. They are not a production benchmark. PostgreSQL holds the registry, evidence, approvals, and audit log. The graph holds concepts and relationships. Both sit behind the same gate.
+      </p>
+    </section>
+  </article>
+</BaseLayout>

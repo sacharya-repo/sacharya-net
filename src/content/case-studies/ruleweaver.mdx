@@ -1,0 +1,52 @@
+---
+title: RuleWeaver — Rules Before Generated Code
+summary: A versioned rule registry, an ontology, and a deterministic evaluation path so extracted business rules cannot become ELT until they are simulated and approved.
+pubDate: 2026-11-26
+order: 4
+role: Enterprise & AI Architect
+domain: Healthcare payer claims
+tags:
+  - Rule Registry
+  - Governance
+  - Ontology
+  - ELT
+metrics:
+  - value: "7"
+    label: Evaluation stages
+  - value: "12"
+    label: Allow-listed operators
+  - value: "5"
+    label: Lifecycle states
+---
+
+import RuleWeaverDemo from '../../components/demos/RuleWeaverDemo';
+
+## Context
+
+Claims policy does not live in the warehouse as executable logic. It lives in documents, in column meaning, and in the people who review exceptions. Extraction can turn that material into candidate rules with evidence and a confidence score. The failure mode is treating the candidate as authority and inlining it into a dbt model or a PySpark job.
+
+The operating requirement is the opposite. A rule is a versioned record. It moves through draft, review, approved, published, and deprecated. Only a published rule may auto-apply. Generated code references the rule. It does not absorb it.
+
+The full brief, including the architecture figure and the trade-offs, is the [RuleWeaver showcase](/demos/ruleweaver). The sandbox below is the same evaluator.
+
+## Architectural Approach
+
+The registry stores conditions and actions, not prose. Operators are a closed set: equality, ordering, membership, and a few string matches. An operator outside that set fails validation, and a draft that proposes a paid-amount write is blocked rather than simulated into an artifact.
+
+Payload fields are aliases onto the healthcare ontology. Member status, network status, billed amount, and claim type resolve to Member, Provider, and Claim. The graph is where those concepts live. PostgreSQL is where the rule, its evidence, its tests, and its approvals live.
+
+Simulation is the gate in front of generation. An allow makes an artifact eligible. An escalate opens a review and sets the approval so it cannot proceed. A deny, including a schema failure, withholds the write and still appends the ledger.
+
+## Governance & Guardrails
+
+Low confidence does not get a direction. A matched rule under the floor escalates whether it would have approved or denied. Amounts between the auto-approve ceiling and the hard stop are a coverage gap on purpose: no published action, a human reviewer, no invented rule.
+
+Unpublished rules can be shown in the trace. They cannot auto-approve. That split is the point of the lifecycle.
+
+## Try the registry
+
+The pack is synthetic. Ceilings, excerpts, and rule ids on this page are a public model of the mechanics, not a production policy and not a client benchmark.
+
+<div class="not-prose my-10">
+  <RuleWeaverDemo client:load />
+</div>

@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'Demos';
+const description =
+  'Interactive architecture demos by Shantanu Acharya. RuleWeaver runs a governed claim-rule evaluation in the browser.';
+const canonical = 'https://www.sacharya.net/demos';
+---
+
+<BaseLayout title={title} description={description} canonical={canonical}>
+  <div class="mx-auto max-w-6xl px-5 pt-16 pb-24 sm:px-6 md:pt-24">
+    <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">Demos</p>
+    <h1 class="mt-3 max-w-3xl text-4xl font-medium tracking-[-0.04em] text-neutral-950 sm:text-5xl dark:text-white">
+      Run the architecture.
+    </h1>
+    <p class="mt-5 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+      Short, deterministic models of systems described elsewhere on this site. They stay in the browser.
+    </p>
+
+    <a
+      href="/demos/ruleweaver"
+      class="group mt-12 flex flex-col justify-between gap-8 rounded-2xl border border-neutral-200 bg-white/80 p-7 transition hover:-translate-y-0.5 sm:p-9 md:flex-row md:items-end dark:border-neutral-800 dark:bg-neutral-950/60"
+    >
+      <div>
+        <p class="font-mono text-[11px] tracking-[0.18em] text-neutral-500 uppercase">01 — RuleWeaver</p>
+        <h2 class="mt-4 max-w-xl text-2xl font-medium tracking-[-0.03em] text-neutral-950 sm:text-3xl dark:text-white">
+          Governed rules, before any generated code.
+        </h2>
+        <p class="mt-4 max-w-xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          A claims registry with allow, escalate, and deny. Move the ceiling or the confidence floor and read the ledger. Executive and architect views, no API.
+        </p>
+        <ul class="mt-6 flex flex-wrap gap-2">
+          <li class="rounded-full border border-neutral-200 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-neutral-500 uppercase dark:border-neutral-800">
+            Rule registry
+          </li>
+          <li class="rounded-full border border-neutral-200 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-neutral-500 uppercase dark:border-neutral-800">
+            Governance
+          </li>
+          <li class="rounded-full border border-neutral-200 px-2.5 py-1 font-mono text-[10px] tracking-[0.14em] text-neutral-500 uppercase dark:border-neutral-800">
+            Ontology
+          </li>
+        </ul>
+      </div>
+      <span class="text-sm text-neutral-600 underline decoration-neutral-300 underline-offset-4 group-hover:text-neutral-950 dark:text-neutral-400 dark:decoration-neutral-700 dark:group-hover:text-white">
+        Open the showcase
+      </span>
+    </a>
+  </div>
+</BaseLayout>
