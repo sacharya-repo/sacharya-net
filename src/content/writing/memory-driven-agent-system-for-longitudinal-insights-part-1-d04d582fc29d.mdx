@@ -1,0 +1,82 @@
+---
+title: "Memory-Driven Agent System for Longitudinal Insights — Part 1"
+date: 2025-07-24
+summary: "Co-Author — [**Svayambhu Chaudhuri**](https://medium.com/@svayambhu2001)"
+readTime: "4 min read"
+tags:
+  - "Essays"
+externalUrl: "https://s-acharya.medium.com/memory-driven-agent-system-for-longitudinal-insights-part-1-d04d582fc29d"
+canonicalUrl: "https://www.sacharya.net/writing/memory-driven-agent-system-for-longitudinal-insights-part-1-d04d582fc29d"
+---
+
+### Memory-Driven Agent System for Longitudinal Insights — Part 1
+
+Co-Author — [**Svayambhu Chaudhuri**](https://medium.com/@svayambhu2001)
+
+In this two part story, we present the case of using Memory-Driven Agent System for longitudinal insight of patient data. [Part 2](https://s-acharya.medium.com/memory-driven-agent-system-for-longitudinal-insights-part-2-12a619fef4e5) provides a possible implementation.
+
+Consider the following scenarios,
+
+> A patient visits ER with vague abdominal pain. The AI triage tool suggest low-acuity path due to normal vitals. It however fails to take into consideration some facts which would have otherwise helped to make a timely and relevant diagnosis:
+
+> · Patient has a history of alcohol use and was treated in a different facility for that
+
+> · He has similar visits in the past, each time he was discharged without a follow-up
+
+> Result is a decision made without adequate information
+
+Or
+
+> Consider the case of a **55-year-old diabetic patient** presenting with mild chest discomfort. A stateless AI system might analyze the current EHR snapshot, note that the patient’s ECG is borderline and troponin levels are normal, and thus recommend no immediate action. However, a **memory-driven system with longitudinal awareness** would recognize that this patient has had three previous emergency visits in the last six months with similar complaints, a gradually rising trend in HbA1c, and a missed cardiology follow-up after a prior abnormal stress test.
+
+> This broader, contextual view would **elevate clinical suspicion**, potentially triggering a cardiology referral or expedited workup.
+
+Modern Healthcare while rich in data suffers from lack of interoperability and continuity. Data is generated at various juncture and in various form (electronic, paper etc.) at various stages of a patient life. Often due to discontinuity and interoperability related issues, actionable and timely insights cannot be drawn. Every ‘encounter’ a patient has with the various healthcare related services, generates data in some form or the other, this data however gets scattered due to relocation, change of providers etc.
+
+Added to this is the lack of interoperability between diverse systems that hinder seamless sharing of data. This results in care gaps, misdiagnosis, increased medical errors and negative patient experience.
+
+The fragmentation and lack of continuity makes it difficult for the clinicians to gain a ‘**Comprehensive Longitudinal Insights’** necessary for optimal decision making.
+
+**Advent of AI Systems in Healthcare (Traditional AI)**
+
+Artificial Intelligence started getting integrated in healthcare in 1970s and 1980s. The early systems were rule based or episodic system such as [**MYCIN**](https://en.wikipedia.org/wiki/Mycin) and [**Internist-I**](https://pubmed.ncbi.nlm.nih.gov/7048091/), which helped to make medical diagnosis using ‘if-then’ logic. These expert systems relied on rules that were manually encoded and had very narrow areas of applicability such as selecting antibiotics based on the symptoms presented. **2000s** and **2010s** saw the advent of new generation of AI models due to the rise of **Machine Learning**, that could learn and disseminate information from data patterns and proved to be very useful in such task as medical imaging, risk prediction and triage. These models were stateless and were event driven; they lacked the capacity to understand patients longitudinally. They process information from a single event or encounter (a visit, lab results etc.) and typically, do not consider patient’s history, trends, context etc.
+
+These models are typically trained on a specific data set (e.g. predicting MI only on current vitals). They lack memory of past decisions or events and were incapable dynamically adjusting based on patient’s evolving health status.
+
+**A case for Memory Driven Agentic AI Framework**
+
+Memory driven Agentic AI systems offer a transformative solution, by combining Large Language Models, persistent memory stores and multi-agent architectures, these systems can ingest, remember and reason over patient’s health journey- providing real-time, personalized insights.
+
+**What is Memory Driven Agentic AI?**
+
+Memory Driven Agentic AI refers to artificial intelligence systems that can store, recall, and reason over past interactions or data — just as a human would use memory to learn from experience, understand context, and make better decisions over time.
+
+While traditional, stateless AI models treat each data input independently, memory-driven systems are stateful and context-aware and can retain both structured and unstructured data (past conversations, medical records, prior decisions) and use it to:
+
+· Connect events
+
+· Avoid redundancies and mistakes
+
+· Tailor responses and recommendations
+
+**Types of Memory-Driven AI**
+
+· **Episodic Memory** — Stores past events (patient encounters, claim decisions, chat history etc.)
+
+· **Semantic Memory** — Captures domain knowledge (guidelines, drug specifications and interactions etc.)
+
+· **Working Memory** — Holds temporary context during reasoning or multi-step process
+
+**Retrieval System** — Vector databases
+
+**Agentic LPR Prototype — Process Flow**
+
+The process flows an Agentic LPR prototype involves the following steps:
+
+The provider attending the patient enters patient personal details, current symptoms and any other details such as (images, lab work etc.) into a **Patient Portal (1),** this data is then interpreted by **Data Collector Agent (2)** which then interacts with **Memory Manager (3)**. **Memory Manager** interacts with a **Vector Database (such as FAISS or Qdrant) (4).**
+
+Information is then passed to the **Clinical Reasoner (5),** which then checks if ‘more insight is needed’, if yes then it gets that from the Vector Database. Finally, insight is generated via **Insight Generator (6)** which then pushes the insights generated to **Explainer (7)**. Explainer pusher the information back to the Patient Portal.
+
+In conclusion, the Agentic Memory driven LPR provides a transformative approach to utilizing an Agentic AI framework powered by LLM to provide more contextual and relevant information of patient health. With access to historical data, trends and patient behavior patterns, it lays the foundation for **intelligent**, **explainable**, and **proactive** healthcare decision support.
+
+![](https://medium.com/_/stat?event=post.clientViewed&referrerSource=full_rss&postId=d04d582fc29d)

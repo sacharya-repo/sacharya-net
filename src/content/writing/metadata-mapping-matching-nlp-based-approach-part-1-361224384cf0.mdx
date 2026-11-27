@@ -1,0 +1,42 @@
+---
+title: "Metadata Mapping & Matching — NLP based approach — Part 1"
+date: 2022-12-06
+summary: "- Shantanu Acharya & Diptiman Chakrabarti"
+readTime: "1 min read"
+tags:
+  - "Essays"
+externalUrl: "https://s-acharya.medium.com/metadata-mapping-matching-nlp-based-approach-part-1-361224384cf0"
+canonicalUrl: "https://www.sacharya.net/writing/metadata-mapping-matching-nlp-based-approach-part-1-361224384cf0"
+---
+
+### Metadata Mapping & Matching — NLP based approach — Part 1
+
+-   Shantanu Acharya & Diptiman Chakrabarti
+
+Advent of Big Data processing and the availability of open source tools and platforms have increased the hunger of getting data in all sorts of forms and structure. The need to ingest data in various forms (flat files, relational etc.) often requires ‘standardization’ of the source data format to match the organization’s data format/layouts. This is often a manual and time taking process involving multiple iterations.
+
+Although this process can perhaps be never fully automated, the following is an attempt at achieving some sort of automation using Natural Language Processing technique
+
+(A),(B) — Organization’s Standard Layout is validated, cleansed and processed via NLP based entity extraction (this step would need to be repeated for any new layouts)
+
+(2),(3) External file layout is cleansed and processed via NLP based Entity Extraction.
+
+(4),(5) ML based matching technique is then used to create data mapping with match score
+
+(6) Match score is then validated by a analyst, validated mapping is then stored in the Metadata Repository
+
+-   \*Any new file layout would then be mapped using the pre-trained model.
+
+We would using following AWS Services for Metadata Mapping & Matching pipeline
+
+**AWS S3** — Primary storage for Layout Files
+
+**AWS Dynamo —** Metadata Repository
+
+**AWS EMR —** Compute
+
+**AWS Lambda Function , Step Functions**
+
+The application is primarily coded using Python 3.6
+
+![](https://medium.com/_/stat?event=post.clientViewed&referrerSource=full_rss&postId=361224384cf0)

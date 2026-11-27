@@ -1,0 +1,184 @@
+---
+title: "Memory-Driven Agent System for Longitudinal Insights — Part 2"
+date: 2025-07-24
+summary: "In the [Part 1](https://s-acharya.medium.com/d04d582fc29d) of this story we examined how Memory-Driven Agent System can help getting more insightful information about a patient. In this part we will see a possible Python based implementa…"
+readTime: "3 min read"
+tags:
+  - "Essays"
+externalUrl: "https://s-acharya.medium.com/memory-driven-agent-system-for-longitudinal-insights-part-2-12a619fef4e5"
+canonicalUrl: "https://www.sacharya.net/writing/memory-driven-agent-system-for-longitudinal-insights-part-2-12a619fef4e5"
+---
+
+### Memory-Driven Agent System for Longitudinal Insights — Part 2
+
+In the [Part 1](https://s-acharya.medium.com/d04d582fc29d) of this story we examined how Memory-Driven Agent System can help getting more insightful information about a patient. In this part we will see a possible Python based implementation.
+
+To recall , we are trying to implement the following process flow
+
+The key agents in action are:
+
+§ **Data Collector** — Ingests EHR, FHIR, HL7, clinical notes, imaging reports etc.
+
+§ **Memory Manager —** Stores and indexes patient data using vector DB (e.g., FAISS, Qdrant)
+
+§ **Clinical Reasoner** — Synthesizes information across time to generate insight or care suggestions
+
+§ **Explainer —** Translates reasoning into human‑understandable summaries
+
+**Suggested Technical Components**
+
+o **LLM Backend**\- Local (Ollama), vLLM, or OpenAI‑compatible APIs
+
+o **Memory Store**\- FAISS / Qdrant for semantic search of patient history
+
+o **Framework**\- Langgraph, BeeAI
+
+o **Integration**\- Streamlit
+
+For this prototype we would be using
+
+Python : Python3.12, uv as the package manager
+
+We are also using Phoenix ([https://phoenix.arize.com/](https://phoenix.arize.com/)) for agent traceability and telemetry hosted via podman. Please refer to [https://arize.com/docs/phoenix/self-hosting/deployment-options/docker](https://arize.com/docs/phoenix/self-hosting/deployment-options/docker) for the steps.
+
+We have also used a containerized version of Qdrant , please refer to [https://qdrant.tech/documentation/guides/installation/](https://qdrant.tech/documentation/guides/installation/)
+
+The prototype uses Ollama (LLM inference)
+
+Steps
+
+Create the project, venv using uv
+
+uv init --python=3.12  
+uv venv  
+source .venv/bin/activate
+
+This should initialize the project and create and activate Python virtual environment.
+
+Update the pyproject.toml (or use ‘uv add’ to install the relevant packages)
+
+\[project\]  
+name = "agentic-lpr"  
+version = "0.1.0"  
+description = "Add your description here"  
+readme = "README.md"  
+requires-python = "\>\=3.12"  
+dependencies = \[  
+    "arize-phoenix\>\=11.9.0",  
+    "beeai-framework\>\=0.1.31",  
+    "chromadb\>\=1.0.15",  
+    "langchain\>\=0.3.26",  
+    "langchain-community\>\=0.3.27",  
+    "langchain-core\>\=0.3.70",  
+    "langgraph\>\=0.5.4",  
+    "numpy\>\=2.3.1",  
+    "qdrant-client\>\=1.15.0",  
+    "streamlit\>\=1.47.0",  
+\]
+
+Pertinent packages are imported
+
+  
+from langgraph.graph import StateGraph  
+from langchain\_core.tools import tool  
+from langchain\_core.runnables import RunnableLambda  
+from langchain\_community.llms import Ollama  
+import numpy as np  
+from qdrant\_client import QdrantClient  
+from langchain.vectorstores.qdrant import Qdrant  
+from langchain.embeddings import FakeEmbeddings  
+from typing import TypedDict, Optional  
+from phoenix.otel import register  
+from openinference.instrumentation.langchain import LangChainInstrumentor  
+import uuid  
+from datetime import datetime,date  
+import streamlit as st
+
+Register OpenTelemetry trace for Phoenix
+
+tracer\_provider = register()  
+LangChainInstrumentor().instrument(tracer\_provider=tracer\_provider)
+
+Define a state schema for LangGraph
+
+class PatientState(TypedDict):  
+    patient\_id: str  
+    patient\_name: Optional\[str\]  
+    dob: Optional\[str\]  
+    data: Optional\[dict\]  
+    memory\_response: Optional\[str\]  
+    needs\_insight: Optional\[bool\]  
+    history: Optional\[dict\]  
+    summary: Optional\[str\]  
+    insight: Optional\[dict\]  
+    explanation: Optional\[str\]
+
+Setup and configure Qdrant
+
+qdrant\_client = QdrantClient(host="localhost", port=6333)  
+embedding\_function = FakeEmbeddings(size=384)  # Replace with real embedding in prod  
+collection\_name = "patient\_memory"  
+  
+try:  
+    qdrant\_client.create\_collection(collection\_name=collection\_name, vectors\_config={"size": 384, "distance": "Cosine"})  
+except Exception:  
+    pass  
+  
+collection = Qdrant(client=qdrant\_client, collection\_name=collection\_name, embeddings=embedding\_function)
+
+**Agent Definition**
+
+**Data Collector Agent** is defined as follows. Since this is a prototype we are using dummy data to simulate data collection scenario.
+
+@tool  
+def data\_collector(patient\_id: str, symptoms: list\[str\], report: Optional\[str\] = None) -\> dict:  
+    """Tool implementation for data\_collector."""  
+    return {  
+        "patient\_id": patient\_id,  
+        "lab\_results": {"A1C": 8.1},  
+        "visits": \["2023-08-01", "2023-11-01"\],  
+        "symptoms": symptoms,  
+        "report": report  
+    }
+
+Next, Memory Manager Agent and other agents are defined
+
+@tool  
+def memory\_manager(data: dict) -\> str:  
+    """Tool implementation for memory\_manager."""  
+    embedding = np.random.rand(384).tolist()  # simulate embedding  
+    collection.add\_texts(  
+        texts=\[str(data)\],  
+        metadatas=\[{"patient\_id": data\["patient\_id"\], "timestamp": datetime.now().isoformat()}\],  
+        ids=\[str(uuid.uuid4())\]  # Ensure UUIDs are used as valid point IDs  
+    )  
+    memory\_store.append((data\["patient\_id"\], embedding))  
+    return "Memory updated"  
+  
+@tool  
+def clinical\_reasoner(patient\_id: str) -\> bool:  
+    """Tool implementation for clinical\_reasoner."""  
+    return True if patient\_id and len(memory\_store) \> 0 else False  
+  
+\# Fetch History  
+  
+@tool  
+def fetch\_history(patient\_id: str) -\> dict:  
+    """Tool implementation for fetch\_history."""  
+    query\_embedding = np.random.rand(384).tolist()  
+    results = collection.similarity\_search\_by\_vector(query\_embedding, k=3)  
+    previous\_visits = \[r.page\_content for r in results if r.metadata.get("patient\_id") == patient\_id\]  
+    if results:  
+        return {  
+            "memory\_embedding\_index": 0,  
+            "matched\_patient": results\[0\].metadata.get("patient\_id"),  
+            "previous\_notes": previous\_visits  
+        }  
+    return {}
+
+Full code can be found from github [repo](https://github.com/sacharya-repo/agentic-lpr.git)  
+If everything is a success you should see streamlit screen like
+
+Phoenix trace shows the interaction between the agents
+
+![](https://medium.com/_/stat?event=post.clientViewed&referrerSource=full_rss&postId=12a619fef4e5)
