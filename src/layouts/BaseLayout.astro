@@ -89,7 +89,7 @@ const pageTitle = title === site.title ? title : `${title} — Shantanu Acharya`
         ...socials.flatMap((item) =>
           'href' in item && item.icon !== 'mail' ? [item.href] : [],
         ),
-        ...repositories.map((repo) => repo.href),
+        ...repositories.flatMap((repo) => (repo.href.startsWith('http') ? [repo.href] : [])),
       ],
     })} />
   </head>

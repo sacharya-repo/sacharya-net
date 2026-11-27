@@ -69,8 +69,7 @@ const iconButton =
                   <li>
                     <a
                       href={repo.href}
-                      target="_blank"
-                      rel="noreferrer"
+                      {...(repo.href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}
                       class="block rounded-xl px-3 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-900"
                     >
                       <span class="block text-sm font-medium text-neutral-950 dark:text-white">

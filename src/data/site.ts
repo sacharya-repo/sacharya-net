@@ -22,8 +22,8 @@ export const nav = [
 export const repositories = [
   {
     name: 'RuleWeaver',
-    description: 'Rules, then generated code.',
-    href: 'https://github.com/sacharya-repo/RuleWeaver',
+    description: 'Ask for permission.',
+    href: `mailto:${site.email}?subject=${encodeURIComponent('Request access to RuleWeaver')}`,
   },
 ] as const;
 
@@ -85,5 +85,5 @@ export const speakingTopics = [
 export const affiliations = [
   'IBM — Enterprise & AI Architect (Richmond, Virginia)',
   'Healthcare payer ecosystem: claims, clinical data, interoperability',
-  'Open source reference architecture — RuleWeaver',
+  'RuleWeaver — shared on request',
 ] as const;
